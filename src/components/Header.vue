@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ProfileIcon from './ProfileIcon.vue';
+
 </script>
 
 <template>
@@ -10,10 +12,7 @@
                 <div class="material-icons logo">sports_basketball</div>
             </RouterLink>
             <slot class="nav"></slot>
-            <div>
-                <!-- profile -->
-                <div class="profile-icon"></div>
-            </div>
+            <ProfileIcon></ProfileIcon>
         </header>
     </div>
 </template>
@@ -34,13 +33,6 @@
 }
 .logo:hover{
     rotate:180deg;
-}
-
-.profile-icon{
-    width:40px;
-    height:40px;
-    background-color:gainsboro;
-    border-radius:50%;
 }
 
 :slotted(nav){

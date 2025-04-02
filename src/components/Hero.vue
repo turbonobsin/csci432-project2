@@ -36,28 +36,18 @@ import TextScroller from "./TextScroller.vue";
     align-items:center;
     gap:10px;
 }
-.fill-line{
-    width:100%;
-    height:0px;
-    border-top:dotted 3px currentColor;
-    opacity:0.2;
-    margin-inline:var(--size-500);
-}
 .b-get-started{
     width:max-content;
     flex-shrink:0;
 }
 
-.col2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-}
 .hero-cont{
     height:calc(100vh - var(--header-height) - 300px);
     max-height:600px;
     display:relative;
     display:grid;
     /* grid-template-rows: 1fr 300px; */
+    font-family:Boldonse;
 }
 .title-cont{
     display:flex;

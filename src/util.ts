@@ -34,3 +34,21 @@ export function wait(delay:number){
         },delay);
     });
 }
+
+export function validateEmail(email:string){
+    return email.match(/.+@.+\..+/);
+}
+
+export type User = {
+    user:{
+        username:string;
+        email:string;
+        favoriteTeams:string[];
+        favoritePlayers:string[];
+        betIds:string[];
+        createdAt:string;
+        updatedAt:string;
+        _id:string;
+    };
+    token:string;
+};

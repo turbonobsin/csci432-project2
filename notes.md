@@ -31,3 +31,7 @@ useful to know:
 ```typescript
 const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 ```
+
+<!-- dev accounts -->
+claebcode
+claebdev@example.com

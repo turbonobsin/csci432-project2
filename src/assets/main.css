@@ -27,16 +27,22 @@
 	--header-height: 75px;
 
 	--clr-neutral-100: #fafafa;
+	--clr-neutral-200: hsl(0, 0%, 95%);
+	--clr-neutral-300: hsl(0, 0%, 82%);
+	--clr-neutral-400: hsl(0, 0%, 75%);
 	--clr-neutral-900: #222222;
 	--clr-primary-400: #c62222;
 	--clr-primary-500: hsl(0, 78%, 40%);
 	--clr-primary-600: hsl(0, 65%, 35%);
-	--clr-secondary-400: #3b5da2;
+	/* --clr-secondary-400: #3b5da2; */
+	--clr-secondary-400: #25378e;
 
 	--clr-button-bg:var(--clr-primary-400);
 	--clr-button-hover:var(--clr-primary-500);
 	--clr-button-active:var(--clr-primary-600);
 	--clr-button-text:var(--clr-neutral-100);
+
+	--clr-error-400:var(--clr-primary-400);
 }
 
 .material-icons,
@@ -51,7 +57,7 @@ a{
 	font-family:"Roboto";
 	font-weight:600;
 }
-a.btn.accent{
+.btn.accent{
 	text-decoration:none;
 	/* border-bottom:solid 1px currentColor; */
 	color:var(--clr-neutral-100);
@@ -59,10 +65,10 @@ a.btn.accent{
 	border-radius:4px;
     font-size:14px;
 }
-a.btn.accent:hover{
+.btn.accent:hover{
 	background-color:var(--clr-button-hover);
 }
-a.btn.accent:active{
+.btn.accent:active{
 	background-color:var(--clr-button-active);
 }
 .btn,
@@ -89,8 +95,8 @@ body{
 	--vt-c-white-mute: #f2f2f2;
 
 	/* font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; */
-	/* font-family: Roboto; */
-	font-family: Boldonse;
+	font-family: Roboto;
+	/* font-family: Boldonse; */
 	/* font-family: Doto; */
 
 	background:repeating-linear-gradient(whitesmoke 0px, whitesmoke 1px, transparent 1px, transparent 20px);
@@ -137,4 +143,36 @@ main#main{
 }
 .margin-left-auto{
 	margin-left:auto;
+}
+
+.col2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+}
+
+/* inputs */
+input[type=text],
+input[type=password]{
+	background-color:var(--clr-neutral-200);
+	border:solid 1px var(--clr-neutral-300);
+	padding:var(--size-200) var(--size-400);
+	border-radius:var(--size-100);
+}
+
+.fill-line{
+    width:100%;
+    height:0px;
+    border-top:dotted 3px currentColor;
+    opacity:0.2;
+    margin-inline:var(--size-500);
+}
+
+.link{
+	/* text-decoration:underline; */
+	border-bottom:solid 2px currentColor;
+	color:var(--clr-secondary-400);
+}
+
+[hide=true]{
+	opacity:0;
 }

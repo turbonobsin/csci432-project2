@@ -12,7 +12,7 @@ import Hero from '@/components/Hero.vue';
 		</nav>
 	</Header>
 	<main id="main">
-		<Hero></Hero>
+		This is main
 	</main>
 </template>
 
