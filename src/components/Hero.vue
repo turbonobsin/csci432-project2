@@ -7,25 +7,57 @@ import TextScroller from "./TextScroller.vue";
     <div class="hero-cont">
         <div class="glow"></div>
         <div class="glow glow2"></div>
-        <div class="title-cont">
-            <div class="title">NBA Stats</div>
-        </div>
-        <div class="info-cont">
-            <div class="info">
-                <TextScroller :list="['Search','Organize','Favorite','Betting','Search','Organize','Favorite','Betting']"></TextScroller>
+        <div class="col2">
+            <div class="title-cont">
+                <div class="title">NBA Stats</div>
+            </div>
+            <div class="info-cont">
+                <div class="info">
+                    <TextScroller :list="['Search','Organize','Favorite','Betting','Search','Organize','Favorite','Betting']"></TextScroller>
+                </div>
             </div>
         </div>
+
+    </div>
+    <div class="join-cont">
+        <div class="fill-line"></div>
+        <RouterLink to="/join" class="btn accent icon-cont b-get-started"><div class="material-icons">sports_basketball</div>Get Started</RouterLink>
+        <div class="fill-line"></div>
+        <!-- net underneath that ball from button drops into and then changes page -->
     </div>
 </template>
 
 <style scoped>
 
+.join-cont{
+    height:100px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+}
+.fill-line{
+    width:100%;
+    height:0px;
+    border-top:dotted 3px currentColor;
+    opacity:0.2;
+    margin-inline:var(--size-500);
+}
+.b-get-started{
+    width:max-content;
+    flex-shrink:0;
+}
+
+.col2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+}
 .hero-cont{
     height:calc(100vh - var(--header-height) - 300px);
     max-height:600px;
-    display:grid;
-    grid-template-columns:1fr 1fr;
     display:relative;
+    display:grid;
+    /* grid-template-rows: 1fr 300px; */
 }
 .title-cont{
     display:flex;
@@ -52,6 +84,7 @@ import TextScroller from "./TextScroller.vue";
 }
 
 .glow{
+    pointer-events:none;
     position:absolute;
     right:-70px;
     top:-150px;

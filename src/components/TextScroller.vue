@@ -34,12 +34,6 @@ onMounted(async ()=>{
 
 <template>
     <div ref="text-scroller-cont" class="text-scroller-cont">
-        <div class="test">
-            <svg height="500">
-                <!-- <rect x="50" y="50" width="100" height="100"></rect> -->
-                <path d="M 0 0 L 500px 100px L 500px 20px" stroke-width="20"></path>
-            </svg>
-        </div>
         <div class="item" v-for="(item,i) in props.list" :style="{'--ang':((i - inc)/props.list.length*360)+'deg'}" :active="current == i">
             <div>{{ item }}</div>
         </div>

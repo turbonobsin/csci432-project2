@@ -1,5 +1,6 @@
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons|Material+Symbols+Outlined);
 @import url('https://fonts.googleapis.com/css2?family=Boldonse&family=Doto:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root{
 	--fs-300: 0.8125rem;
@@ -28,18 +29,58 @@
 	--clr-neutral-100: #fafafa;
 	--clr-neutral-900: #222222;
 	--clr-primary-400: #c62222;
+	--clr-primary-500: hsl(0, 78%, 40%);
+	--clr-primary-600: hsl(0, 65%, 35%);
 	--clr-secondary-400: #3b5da2;
 
 	--clr-button-bg:var(--clr-primary-400);
+	--clr-button-hover:var(--clr-primary-500);
+	--clr-button-active:var(--clr-primary-600);
 	--clr-button-text:var(--clr-neutral-100);
 }
 
-.button,
+.material-icons,
+.material-symbols-outlined{
+	line-height:1;
+}
+
+a{
+	text-decoration:none;
+	color:var(--clr-neutral-900);
+	/* font-family:"Roboto"; */
+	font-family:"Roboto";
+	font-weight:600;
+}
+a.btn.accent{
+	text-decoration:none;
+	/* border-bottom:solid 1px currentColor; */
+	color:var(--clr-neutral-100);
+	text-transform:uppercase;
+	border-radius:4px;
+    font-size:14px;
+}
+a.btn.accent:hover{
+	background-color:var(--clr-button-hover);
+}
+a.btn.accent:active{
+	background-color:var(--clr-button-active);
+}
+.btn,
 button{
 	background-color:var(--clr-button-bg);
 	color:var(--clr-button-text);
 	border:none;
 	padding:var(--size-200) var(--size-500);
+}
+.icon-btn{
+	display:flex;
+	gap:var(--size-200);
+	align-items:center;
+}
+.icon-cont{
+	display:flex;
+	gap:var(--size-200);
+	align-items:center;
 }
 
 body{
@@ -72,15 +113,6 @@ main#main{
   box-sizing: border-box;
   margin: 0;
   font-weight: normal;
-}
-
-a{
-	text-decoration:none;
-	/* border-bottom:solid 1px currentColor; */
-	color:var(--clr-neutral-900);
-	text-transform:uppercase;
-	font-style:italic;
-	border-radius:4px;
 }
 
 @media (hover: hover) {

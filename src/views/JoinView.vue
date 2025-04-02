@@ -6,11 +6,10 @@ import Hero from '@/components/Hero.vue';
 <template>
 	<Header>
 		<nav>
-			<RouterLink to="/join">Join</RouterLink>
 		</nav>
 	</Header>
 	<main id="main">
-		<Hero></Hero>
+		
 	</main>
 </template>
 

@@ -4,15 +4,12 @@
 <template>
     <div class="header-cont">
         <header class="flex ac">
-            <div>
+            <RouterLink to="/">
                 <!-- icon -->
-                <img class="logo" src="../assets/nba-logo.svg" alt="NBA Logo">
-            </div>
-            <nav>
-                <RouterLink class="button" to="">Link 1</RouterLink>
-                <RouterLink to="">Link 2</RouterLink>
-                <RouterLink to="">Link 3</RouterLink>
-            </nav>
+                <!-- <img class="logo-img" src="../assets/nba-logo.svg" alt="NBA Logo"> -->
+                <div class="material-icons logo">sports_basketball</div>
+            </RouterLink>
+            <slot class="nav"></slot>
             <div>
                 <!-- profile -->
                 <div class="profile-icon"></div>
@@ -23,11 +20,20 @@
 
 <style scoped>
 
-.logo{
+.logo-img{
     /* width:40px; */
     /* height:100px; */
     /* margin-top:40px; */
     height:60px;
+}
+.logo{
+    font-size:30px;
+    user-select:none;
+    -webkit-user-select:none;
+    transition:all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.logo:hover{
+    rotate:180deg;
 }
 
 .profile-icon{
@@ -37,7 +43,7 @@
     border-radius:50%;
 }
 
-nav{
+:slotted(nav){
     margin-left:auto;
     margin-right:var(--size-400);
     display:flex;
@@ -45,7 +51,7 @@ nav{
     gap:var(--size-500);
     padding:var(--size-400);
 }
-nav > *{
+:slotted(nav) > *{
     margin:0px var(--size-100);
 }
 

@@ -6,7 +6,9 @@ import Hero from '@/components/Hero.vue';
 <template>
 	<Header>
 		<nav>
-			<RouterLink to="/join">Join</RouterLink>
+			<RouterLink class="button" to="">Link 1</RouterLink>
+			<RouterLink to="">Link 2</RouterLink>
+			<RouterLink to="">Link 3</RouterLink>
 		</nav>
 	</Header>
 	<main id="main">
