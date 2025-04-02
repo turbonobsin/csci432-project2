@@ -161,6 +161,12 @@ form{
 	gap:var(--size-300);
 }
 
+label{
+	font-size:12px;
+	margin-block:var(--size-200);
+	opacity:0.6;
+}
+
 .remember-me-cont{
 	margin-block:var(--size-400);
 	display:flex;

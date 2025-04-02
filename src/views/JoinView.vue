@@ -20,20 +20,32 @@ const user = useUserStore();
 const router = useRouter();
 
 async function join(){
+	form.value?.querySelectorAll("input.invalid").forEach(c=>{
+		c.classList.remove("invalid");
+	});
+	
 	if(!r_username.value || !r_email.value || !r_password.value || !r_confirmPassword.value){
 		err.value?.alert("Please fill out all the fields.");
+		form.value?.querySelectorAll("input").forEach(c=>{
+			c.classList.add("invalid");
+		});
 		return;
 	}
 	if(!validateEmail(r_email.value)){
 		err.value?.alert("Please enter a valid email.");
+		form.value?.querySelector("#i-email")?.classList.add("invalid");
 		return;
 	}
 	if(r_password.value.length < 8){
 		err.value?.alert("Password must be at least 8 characters.");
+		form.value?.querySelector("#i-password")?.classList.add("invalid");
+		form.value?.querySelector("#i-confirm-password")?.classList.add("invalid");
 		return;
 	}
 	if(r_password.value != r_confirmPassword.value){
 		err.value?.alert("Passwords don't match.");
+		form.value?.querySelector("#i-password")?.classList.add("invalid");
+		form.value?.querySelector("#i-confirm-password")?.classList.add("invalid");
 		return;
 	}
 
@@ -85,7 +97,11 @@ onMounted(()=>{
 	</Header>
 	<main id="main">
 		<div class="login-cont">
-			<h1>Make An Account</h1>
+			<div class="login-header">
+				<span class="icon go-back-icon" @click="router.back()">west</span>
+				<h1>Make An Account</h1>
+				<!-- <span class="link" @click="router.back()">Go Back</span> -->
+			</div>
 			<form ref="form">
 				<div class="form-row">
 					<label for="i-username">Username</label>
@@ -117,7 +133,7 @@ onMounted(()=>{
 				<div class="submit-cont">
 					<!-- <div class="fill-line"></div> -->
 					<RouterLink to="/login" class="link login-instead" tabindex="6">Login instead?</RouterLink>
-					<button type="submit" id="i-submit" class="btn accent icon-cont" ref="i-submit" tabindex="5">
+					<button type="submit" id="i-submit" class="btn accent2 icon-cont" ref="i-submit" tabindex="5">
 						<div class="material-icons">sports_basketball</div>
 						Join
 					</button>
@@ -135,12 +151,14 @@ onMounted(()=>{
 }
 
 .login-cont{
-	min-width:400px;
+	/* min-width:400px; */
+	width:522px;
 	border:solid 1px gainsboro;
 	background-color:var(--clr-neutral-100);
 	padding:var(--size-500) var(--size-800);
 	border-radius:var(--size-200);
-	box-shadow:0px 10px 5px rgba(0,0,0,0.03);
+	box-shadow:0px 0px 2px rgba(0,0,0,0.01);
+	animation:ShowLoginCont 0.5s forwards ease-out;
 }
 
 .login-cont > h1{
@@ -148,7 +166,7 @@ onMounted(()=>{
 }
 
 form{
-	margin-top:var(--size-600);
+	margin-top:var(--size-700);
 	display:flex;
 	flex-direction:column;
 	gap:var(--size-300);
@@ -190,6 +208,20 @@ label{
 .login-instead{
 	font-size:14px;
 }
+.login-header{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	margin-top:var(--size-400);
+}
 
+@keyframes ShowLoginCont{
+	0%{
+		box-shadow:0px 0px 2px rgba(0,0,0,0.01);
+	}
+	100%{
+		box-shadow:0px 10px 5px rgba(0,0,0,0.03);
+	}
+}
 
 </style>

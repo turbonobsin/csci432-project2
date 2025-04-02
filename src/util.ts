@@ -39,16 +39,26 @@ export function validateEmail(email:string){
     return email.match(/.+@.+\..+/);
 }
 
+export type UserData = {
+    username:string;
+    email:string;
+    favoriteTeams:string[];
+    favoritePlayers:string[];
+    betIds:string[];
+    createdAt:string;
+    updatedAt:string;
+    _id:string;
+};
 export type User = {
-    user:{
-        username:string;
-        email:string;
-        favoriteTeams:string[];
-        favoritePlayers:string[];
-        betIds:string[];
-        createdAt:string;
-        updatedAt:string;
-        _id:string;
-    };
+    user:UserData;
     token:string;
+};
+export type Team = {
+    abbreviation:string;
+    city:string;
+    conference:string;
+    division:string;
+    full_name:string;
+    id:number;
+    name:string;
 };

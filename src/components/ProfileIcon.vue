@@ -19,12 +19,18 @@ onMounted(()=>{
 
 <template>
     <div class="profile-icon-cont" ref="cont">
-        <div v-if="user.token">{{ user.username || "(Guest)" }}</div>
+        <div class="l-username" v-if="user.token">{{ user.user.username || "(Guest)" }}</div>
         <div class="profile-icon"></div>
     </div>
 </template>
 
 <style scoped>
+
+.l-username{
+    font-family:Boldonse;
+    text-transform:uppercase;
+}
+
 .profile-icon-cont{
     display:flex;
     align-items:center;

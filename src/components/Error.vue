@@ -10,6 +10,7 @@ defineExpose({
     linkInput:(inp:HTMLInputElement)=>{
         inp.addEventListener("keydown",e=>{
             msg.value = "";
+            inp.classList.remove("invalid");
         });
     }
 });
