@@ -23,6 +23,10 @@ export const useUserStore = defineStore("user",()=>{
         }
     });
 
+    function getRememberMe(){
+        return rememberMe.value;
+    }
+
     function makeUser(data:User,rememberMe1:boolean){
         user.value = data.user;
         token.value = data.token;
@@ -34,5 +38,5 @@ export const useUserStore = defineStore("user",()=>{
         token.value = "";
     }
 
-    return {user,token,setUser: makeUser,$reset};
+    return {user,token,setUser: makeUser,$reset,getRememberMe};
 });

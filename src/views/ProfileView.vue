@@ -1,78 +1,143 @@
 <script setup lang="ts">
 import Error from '@/components/Error.vue';
 import Header from '@/components/Header.vue';
+import Loading from '@/components/Loading.vue';
 import { useUserStore } from '@/stores/user';
-import { serverUrl, validateEmail, type User } from '@/util';
+import { serverUrl, validateEmail, type User, type UserData } from '@/util';
 import { onMounted, ref, useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 
 let form = useTemplateRef("form");
 let err = useTemplateRef("error");
 
-let r_email = ref("");
-let r_password = ref("");
-let r_rememberMe = ref(false);
-
 const user = useUserStore();
-
 const router = useRouter();
 
-async function login(){
+let loading = ref(false);
+
+async function getProfile(){
+	if(editMode.value) return;
+	
+	let url = new URL(serverUrl+"/user/me");
+	let res = await fetch(url.href,{
+		method:"GET",
+		headers:{
+			Authorization:`Bearer ${user.token}`
+		}
+	});
+
+	if(res.ok){
+		let data = await res.json() as UserData;
+		user.setUser({
+			user:data,
+			token:user.token
+		},user.getRememberMe());
+
+		username.value = data.username;
+		email.value = data.email;
+	}
+	else{
+		err.value?.alert("Failed to get user profile with status code: "+res.status+` (${res.statusText})`);
+		console.error("Failed to get user profile",res.status,res.statusText);
+	}
+}
+
+async function saveProfile(){
+	if(!editMode.value) return;
+	
 	form.value?.querySelectorAll("input.invalid").forEach(c=>{
 		c.classList.remove("invalid");
 	});
 	
-	if(!r_email.value || !r_password.value){
+	if(!username.value || !email.value){
 		err.value?.alert("Please fill out all the fields.");
 		form.value?.querySelectorAll("input").forEach(c=>{
 			c.classList.add("invalid");
 		});
 		return;
 	}
-	if(!validateEmail(r_email.value)){
+	if(!validateEmail(email.value)){
 		err.value?.alert("Please enter a valid email.");
 		form.value?.querySelector("#i-email")?.classList.add("invalid");
 		return;
 	}
-	if(r_password.value.length < 8){
-		err.value?.alert("Password must be at least 8 characters.");
-		form.value?.querySelector("#i-password")?.classList.add("invalid");
-		return;
-	}
 
-	console.log("login");
+	loading.value = true;
 
-	let res = await fetch(serverUrl+"/user/login",{
-		method:"POST",
+	let res = await fetch(serverUrl+"/user/me",{
+		method:"PATCH",
 		headers:{
+			Authorization:`Bearer ${user.token}`,
 			"Content-Type":"application/json"
 		},
 		body:JSON.stringify({
-			email:r_email.value,
-			password:r_password.value
+			username:username.value,
+			email:email.value
 		})
 	});
 
 	if(res.ok){
-		let data = await res.json() as User;
-		console.log("successfully logged in user:",data);
-		console.log("remembered: ",r_rememberMe.value);
-		user.setUser(data,r_rememberMe.value);
+		let data = await res.json() as UserData;
+		console.log("successfully updated user profile:",data);
+		user.setUser({
+			user:data,
+			token:user.token
+		},user.getRememberMe());
 
-		router.push({name:"main"});
+		editMode.value = false;
 	}
 	else{
-		err.value?.alert("Failed to login with status code: "+res.status+` (${res.statusText})`);
-		console.error("Failed to login",res.status,res.statusText);
+		err.value?.alert("Failed to update user profile with status code: "+res.status+` (${res.statusText})`);
+		console.error("Failed to update user profile",res.status,res.statusText);
+	}
+
+	loading.value = false;
+}
+
+let editMode = ref(false);
+let username = ref(user.user.username);
+let email = ref(user.user.email);
+
+function hasUnsavedChanges(){
+	if(username.value != user.user.username) return true;
+	if(email.value != user.user.email) return true;
+	return false;
+}
+function toggleEditMode(){
+	console.log("toggle");
+	if(hasUnsavedChanges()){
+		if(!confirm("You have unsaved changes, do you wish to delete your changes?")) return;
+		else{
+			username.value = user.user.username;
+			email.value = user.user.email;
+		}
+	}
+	editMode.value = !editMode.value;
+}
+
+async function deleteAccount(){
+	if(!confirm("Are you sure you want to delete your account?\n\nThis action cannot be reversed!")) return;
+	
+	let url = new URL(serverUrl+"/user/me");
+	let res = await fetch(url.href,{
+		method:"DELETE",
+		headers:{
+			Authorization:`Bearer ${user.token}`
+		}
+	});
+
+	if(res.ok){
+		user.$reset();
+		router.push({path:"/"});
+	}
+	else{
+		err.value?.alert("Failed to delete account with status code: "+res.status+` (${res.statusText})`);
+		console.error("Failed to delete account",res.status,res.statusText);
 	}
 }
 
 onMounted(()=>{
-	form.value?.addEventListener("submit",e=>{
-		e.preventDefault();
-		login();
-	});
-
+	getProfile(); // just in case
 	document.querySelectorAll(".login-cont input").forEach(c=>{
 		err.value?.linkInput(c as HTMLInputElement);
 	});
@@ -89,40 +154,57 @@ onMounted(()=>{
 		<div class="login-cont">
 			<div class="login-header">
 				<span class="icon go-back-icon" @click="router.back()">west</span>
-				<h1>Log Back In</h1>
-				<!-- <span class="link" @click="router.back()">Go Back</span> -->
+				<div class="flx-c" style="gap:26px">
+					<h1>Profile</h1>
+					<h1 class="icon click-icon" @click="toggleEditMode">edit</h1>
+				</div>
 			</div>
-			<form ref="form">
+			<div ref="form" class="form">
+				<div class="form-row">
+					<label for="i-username">Username</label>
+					<input v-if="editMode" type="text" name="username" id="i-username" v-model="username" tabindex="1">
+					<h2 v-else class="l-name">{{ user.user.username }}</h2>
+				</div>
 				<div class="form-row">
 					<label for="i-email">Email</label>
-					<input type="text" name="email" id="i-email" v-model="r_email" tabindex="1">
+					<input v-if="editMode" type="text" name="email" id="i-email" v-model="email" tabindex="1">
+					<h4 v-else>{{ user.user.email }}</h4>
 				</div>
 
-				<div class="form-row">
-					<label for="i-password">Password</label>
-					<input type="password" name="password" id="i-password" v-model="r_password" tabindex="2">
-				</div>
-
-				<div class="remember-me-cont">
-					<input type="checkbox" name="remember-me" id="i-remember-me" v-model="r_rememberMe" tabindex="4">
-					<label for="i-remember-me">Remember Me?</label>
-				</div>
-				
 				<Error ref="error"></Error>
+				<!-- <Loading :loading="loading"></loading> -->
 
-				<div class="submit-cont">
-					<RouterLink to="/join" class="link login-instead" tabindex="6">Join instead?</RouterLink>
-					<button type="submit" id="i-submit" class="btn accent2 icon-cont" ref="i-submit" tabindex="5">
-						<div class="material-icons">sports_basketball</div>
-						Log In
+				<br><br><br>
+				<div class="submit-cont flx-c gap4" style="justify-content:center;" :graydisable="!editMode">
+					<button class="btn accent2 icon-cont" ref="i-cancel" tabindex="4" @click="toggleEditMode">
+						<div class="material-icons">close</div>
+						Cancel
+					</button>
+					<button type="submit" id="i-submit" class="btn accent icon-cont" ref="i-submit" tabindex="5" @click="saveProfile">
+						<div class="material-icons">check</div>
+						Save Changes
 					</button>
 				</div>
-			</form>
+
+				<br><br><hr><br><br>
+				<button class="btn accent2 icon-cont" tabindex="6" @click="deleteAccount" style="width:max-content">
+					<div class="material-icons">delete</div>
+					<!-- <div class="material-icons">warning</div> -->
+					Delete Account
+				</button>
+			</div>
 		</div>
 	</main>
 </template>
 
 <style scoped>
+
+.l-name{
+    /* font-size:20px; */
+    font-size:16px;
+    text-transform:uppercase;
+    font-family:Boldonse;
+}
 
 #main{
 	display:flex;
@@ -144,7 +226,7 @@ onMounted(()=>{
 	font-size:22px;
 }
 
-form{
+div.form{
 	margin-top:var(--size-700);
 	display:flex;
 	flex-direction:column;

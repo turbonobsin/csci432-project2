@@ -6,10 +6,11 @@ import ProfileIcon from './ProfileIcon.vue';
 <template>
     <div class="header-cont">
         <header class="flex ac">
-            <RouterLink to="/">
+            <RouterLink to="/" class="flx-c gap4">
                 <!-- icon -->
                 <!-- <img class="logo-img" src="../assets/nba-logo.svg" alt="NBA Logo"> -->
                 <div class="material-icons logo">sports_basketball</div>
+                <div class="l-name">NBA Stats</div>
             </RouterLink>
             <slot class="nav"></slot>
             <ProfileIcon></ProfileIcon>
@@ -19,6 +20,11 @@ import ProfileIcon from './ProfileIcon.vue';
 
 <style scoped>
 
+.l-name{
+    font-size:14px;
+    text-transform:uppercase;
+    font-family:Boldonse;
+}
 .logo-img{
     /* width:40px; */
     /* height:100px; */

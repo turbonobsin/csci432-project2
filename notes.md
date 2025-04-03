@@ -35,3 +35,6 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 <!-- dev accounts -->
 claebcode
 claebdev@example.com
+
+claebcode2
+claebdev2@example.com

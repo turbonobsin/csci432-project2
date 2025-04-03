@@ -12,6 +12,9 @@ defineExpose({
             msg.value = "";
             inp.classList.remove("invalid");
         });
+    },
+    clear:()=>{
+        msg.value = "";
     }
 });
 

@@ -21,7 +21,7 @@ import TextScroller from "./TextScroller.vue";
     </div>
     <div class="join-cont">
         <div class="fill-line"></div>
-        <RouterLink to="/join" class="btn accent icon-cont b-get-started"><div class="material-icons">sports_basketball</div>Get Started</RouterLink>
+        <RouterLink to="/join" class="btn accent2 icon-cont b-get-started"><div class="material-icons">sports_basketball</div>Get Started</RouterLink>
         <div class="fill-line"></div>
         <!-- net underneath that ball from button drops into and then changes page -->
     </div>
