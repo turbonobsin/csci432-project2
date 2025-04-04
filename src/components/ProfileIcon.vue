@@ -124,6 +124,7 @@ onMounted(()=>{
 .profile-menu > div{
     display:grid;
     grid-template-columns:34px 1fr;
+    background-color:var(--clr-neutral-100);
 }
 .profile-menu > div:not(:last-child){
     border-bottom:solid 1px var(--clr-neutral-300);

@@ -7,7 +7,7 @@ import RadioSwitcher from '@/components/RadioSwitcher.vue';
 import TeamItem from '@/components/TeamItem.vue';
 import { useSearchResultsStore } from '@/stores/search_results';
 import { useUserStore } from '@/stores/user';
-import { serverUrl, wait, type SearchGamesRes, type SearchMeta, type SearchPlayerRes, type Team } from '@/util';
+import { getLocalNowDate, serverUrl, wait, type SearchGamesRes, type SearchMeta, type SearchPlayerRes, type Team } from '@/util';
 import { onMounted, ref, useTemplateRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -310,7 +310,14 @@ function nextPage(){
 	runSearchSub();
 }
 
+let gameStartDate:HTMLInputElement|null = null;
+let gameEndDate:HTMLInputElement|null = null;
+const useGameSeason = useTemplateRef("use-game-season");
+
 onMounted(()=>{
+	gameStartDate = document.querySelector("#game-start-date") as HTMLInputElement|null;
+	gameEndDate = document.querySelector("#game-end-date") as HTMLInputElement|null;
+	
 	searchType.value?.onInput((i)=>{
 		router.push({path:[
 			"/main",
@@ -331,6 +338,12 @@ onMounted(()=>{
 	runSearch();
 
 	// getPlayer(8);
+
+	let now = getLocalNowDate();
+	let start = new Date(now.getTime() - 1000*60*60*24*7*52); // minus about 1 year
+	start = new Date(start.toLocaleDateString());
+	if(gameStartDate) gameStartDate.valueAsDate = start;
+	if(gameEndDate) gameEndDate.valueAsDate = now;
 });
 
 </script>
@@ -359,19 +372,48 @@ onMounted(()=>{
 				<br>
 				<hr>
 				<br>
-				<div class="search-cont2" v-show="searchType?.i == 0 || searchType?.i == 2">
+				<div class="search-cont2" v-if="searchType?.i == 0 || searchType?.i == 2">
 					<!-- <label for="">Search</label> -->
 					<input type="text" name="" class="i-query" @keydown="runSearch" placeholder="Search..." v-model="query">
+					<div class="icon click-icon" @click="runSearch">search</div>
+				</div>
+				<div v-else class="search-cont2 sb">
+					<label for="">Search</label>
+					<div class="fill-line"></div>
 					<div class="icon click-icon" @click="runSearch">search</div>
 				</div>
 				<br>
 				<div v-show="searchType?.i == 0" class="flx-c sb">
 					<label for="">Conference</label>
 					<!-- <RadioSwitcher ref="conference-type" class="conference-type" name="conference-type" :i="0" :options="['Either','East','West']" style="--sel-bg:var(--clr-neutral-900);--sel-text:var(--clr-neutral-100)"></RadioSwitcher> -->
-					<RadioSwitcher ref="conference-type" class="conference-type" name="conference-type" :i="0" :options="['Either','East','West']" style="--sel-bg:var(--clr-neutral-300);--sel-text:var(--clr-neutral-900)"></RadioSwitcher>
+					<RadioSwitcher ref="conference-type" class="conference-type neutral-style" name="conference-type" :i="0" :options="['Either','East','West']"></RadioSwitcher>
 				</div>
 				<div v-show="searchType?.i == 1">
-
+					<div class="flx-c sb">
+						<label style="margin-top:0px">Timeframe</label>
+					</div>
+					<div class="flx-c sb">
+						<input type="date" id="game-start-date" ref="game-start-date2">
+						<div class="icon" style="margin-inline:var(--size-100);font-size:18px">east</div>
+						<input type="date" id="game-end-date" ref="game-end-date2">
+					</div>
+					<br>
+					<div class="flx-c gap4">
+						<label class="nm">Season</label>
+						<RadioSwitcher ref="use-game-season" class="neutral-style" name="use-game-season" :options="['Any','Custom']"></RadioSwitcher>
+					</div>
+					<div>
+						<br>
+						<div v-if="useGameSeason?.i == 1" class="flx-c gap4">
+							<label for="">Season</label>
+							<input type="number" name="" class="i-query" placeholder="2025, 2024, 2023, ...">
+						</div>
+					</div>
+					<!-- <div class="search-cont2" v-if="searchType?.i == 0 || searchType?.i == 2">
+						<label for="">Search</label>
+						<input type="text" name="" class="i-query" @keydown="runSearch" placeholder="Search..." v-model="query">
+						<div class="icon click-icon" @click="runSearch">search</div>
+					</div> -->
 				</div>
 				<div v-show="searchType?.i == 2">
 

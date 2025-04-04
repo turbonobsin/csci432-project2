@@ -28,7 +28,7 @@ let icons = ref({
             <!-- <div>{{ team.division }}</div> -->
         </div>
         <div class="flx-c sb">
-            <div>{{ player.height }}</div>
+            <div style="opacity:0.6;font-size:14px;margin-top:4px">{{ player.team.full_name }}</div>
             <!-- <div class="flx-c">{{ team.conference }} <span class="icon">{{ team.conference.toLowerCase() }}</span></div> -->
             <!-- <div class="flx-c">{{ team.conference }} <span class="icon">{{ icons[team.conference.toLowerCase()] }}</span></div> -->
         </div>

@@ -82,4 +82,9 @@ function changeValue(ind:number){
     z-index:0;
 }
 
+.neutral-style{
+    --sel-bg:var(--clr-neutral-300);
+    --sel-text:var(--clr-neutral-900);
+}
+
 </style>

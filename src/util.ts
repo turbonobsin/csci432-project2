@@ -193,3 +193,10 @@ export function stringMatch(s1:string,s2:string){
     s2 = s2.toLowerCase();
     return (s1.includes(s2) || s2.includes(s1));
 }
+
+export function getLocalNowDate(){
+    let date = new Date();
+	let zone = date.toLocaleDateString();
+	date = new Date(zone);
+    return date;
+}
