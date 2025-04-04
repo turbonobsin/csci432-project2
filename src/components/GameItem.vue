@@ -24,6 +24,7 @@ function load(){
         <div class="flx-c sb" style="margin-block:var(--size-200)">
             <div><span class="score" :win="game.home_team_score > game.visitor_team_score ? 1 : game.home_team_score == game.visitor_team_score ? 2 : 0">{{ game.home_team_score }}</span> / <span class="score" :win="game.home_team_score < game.visitor_team_score ? 1 : game.home_team_score == game.visitor_team_score ? 2 : 0">{{ game.visitor_team_score }}</span></div>
             <div>{{ new Date(game.date).toLocaleString([],{dateStyle:"medium"}) }}</div>
+            <!-- <div>{{ game.season }}</div> -->
         </div>
     </SearchItem>
 </template>

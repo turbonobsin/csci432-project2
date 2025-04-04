@@ -191,6 +191,18 @@ async function searchGames(){
 	// if(query.value) url.searchParams.set("name-search",query.value);
 	// if(nextCursor != null) url.searchParams.set("cursor",nextCursor.toString());
 	if(curCursor.value) url.searchParams.set("cursor",curCursor.value.toString());
+	let startDate = gameStartDate?.valueAsDate;
+	let endDate = gameEndDate?.valueAsDate;
+	if(startDate) url.searchParams.set("start_date",startDate.toISOString());
+	if(endDate) url.searchParams.set("end_date",endDate.toISOString());
+	if(useGameSeason.value?.i == 1 && seasons.value){
+		let listStr = seasons.value.toString();
+		listStr = listStr.replace(/\s?[\,\s]\s?/g,",");
+		let list = listStr.split(",");
+		url.searchParams.set("seasons",list[0]); // not sure how to get multiple to work with the endpoint yet (idk what format it's supposed to be)
+	}
+
+	console.log("search game url",url.href);
 	
 	let res = await fetch(url.href,{
 		method:"GET"
@@ -313,6 +325,7 @@ function nextPage(){
 let gameStartDate:HTMLInputElement|null = null;
 let gameEndDate:HTMLInputElement|null = null;
 const useGameSeason = useTemplateRef("use-game-season");
+let seasons = ref("");
 
 onMounted(()=>{
 	gameStartDate = document.querySelector("#game-start-date") as HTMLInputElement|null;
@@ -406,7 +419,7 @@ onMounted(()=>{
 						<br>
 						<div v-if="useGameSeason?.i == 1" class="flx-c gap4">
 							<label for="">Season</label>
-							<input type="number" name="" class="i-query" placeholder="2025, 2024, 2023, ...">
+							<input type="number" name="" class="i-query" placeholder="2025, 2024, 2023, ..." v-model="seasons">
 						</div>
 					</div>
 					<!-- <div class="search-cont2" v-if="searchType?.i == 0 || searchType?.i == 2">
