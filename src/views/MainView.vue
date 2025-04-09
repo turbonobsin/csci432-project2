@@ -8,12 +8,27 @@ import TeamItem from '@/components/TeamItem.vue';
 import { useSearchResultsStore } from '@/stores/search_results';
 import { useUserStore } from '@/stores/user';
 import { getLocalNowDate, serverUrl, wait, type SearchGamesRes, type SearchMeta, type SearchPlayerRes, type Team } from '@/util';
-import { onMounted, ref, useTemplateRef } from 'vue';
+import { onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const user = useUserStore();
 const router = useRouter();
 const route = useRoute();
+
+const props = defineProps({
+	gameId:{
+		type:String,
+		required:false
+	},
+	playerId:{
+		type:String,
+		required:false
+	},
+	playerName:{
+		type:String,
+		required:false
+	}
+});
 
 async function logOut(e:Event){
 	e.preventDefault();
@@ -97,6 +112,7 @@ async function searchTeams(e?:KeyboardEvent){
 	else{
 		alert("Failed to get list of teams with code: "+res.status+` (${res.statusText})`);
 		console.error("Failed to get list of teams with code: "+res.status+` (${res.statusText})`);
+		console.log(await res.text());
 	}
 
 	let time = performance.now()-startTime;
@@ -199,7 +215,7 @@ async function searchGames(){
 		let listStr = seasons.value.toString();
 		listStr = listStr.replace(/\s?[\,\s]\s?/g,",");
 		let list = listStr.split(",");
-		url.searchParams.set("seasons",list[0]); // not sure how to get multiple to work with the endpoint yet (idk what format it's supposed to be)
+		list.forEach(v=>url.searchParams.append("seasons[]",v)); // not sure how to get multiple to work with the endpoint yet (idk what format it's supposed to be) // fixed :D
 	}
 
 	console.log("search game url",url.href);
@@ -327,6 +343,20 @@ let gameEndDate:HTMLInputElement|null = null;
 const useGameSeason = useTemplateRef("use-game-season");
 let seasons = ref("");
 
+function init(){
+	let needsSearchAgain = false;
+	if(searchType.value){
+		let lastI = searchType.value.i;
+		searchType.value.i = (route.meta.typeI as number ?? 0);
+		if(searchType.value.i != lastI){
+			needsSearchAgain = true;
+		}
+		activeType.value = searchType.value.i;
+		console.log("set current page search type: ",searchType.value.i);
+	}
+	if(needsSearchAgain) runSearch();
+}
+
 onMounted(()=>{
 	gameStartDate = document.querySelector("#game-start-date") as HTMLInputElement|null;
 	gameEndDate = document.querySelector("#game-end-date") as HTMLInputElement|null;
@@ -342,13 +372,6 @@ onMounted(()=>{
 	conferenceType.value?.onInput((i)=>{
 		runSearch();
 	});
-	
-	if(searchType.value){
-		searchType.value.i = (route.meta.typeI as number ?? 0);
-		activeType.value = searchType.value.i;
-		console.log("set current page search type: ",searchType.value.i);
-	}
-	runSearch();
 
 	// getPlayer(8);
 
@@ -357,6 +380,14 @@ onMounted(()=>{
 	start = new Date(start.toLocaleDateString());
 	if(gameStartDate) gameStartDate.valueAsDate = start;
 	if(gameEndDate) gameEndDate.valueAsDate = now;
+	
+	init();
+
+	runSearch();
+});
+
+watch(route,()=>{
+	init();
 });
 
 </script>
@@ -366,7 +397,7 @@ onMounted(()=>{
 		<nav>
 			<!-- <RouterLink class="button" to="">Link 1</RouterLink> -->
 			<!-- <input type="text" name="" id=""> -->
-			<RouterLink to="/search">Search</RouterLink>
+			<RouterLink to="/main">Search</RouterLink>
 			<RouterLink to="/favorites">Favorites</RouterLink>
 			<RouterLink to="" @click="logOut">Log Out</RouterLink>
 		</nav>
@@ -419,7 +450,16 @@ onMounted(()=>{
 						<br>
 						<div v-if="useGameSeason?.i == 1" class="flx-c gap4">
 							<label for="">Season</label>
-							<input type="number" name="" class="i-query" placeholder="2025, 2024, 2023, ..." v-model="seasons">
+							<input type="text" name="" class="i-query" placeholder="2025, 2024, 2023, ..." v-model="seasons">
+						</div>
+					</div>
+					<div v-if="props.playerId">
+						<label style="margin-top:var(--size-500)">Including Player</label>
+						<div class="flx-c gap3">
+							<div class="player-item fw">
+								<div class="l-player-name">{{ props.playerName }}</div>
+							</div>
+							<RouterLink class="icon click-icon" :to="props.gameId ? `/main/game/${props.gameId}` : `/main/game`">close</RouterLink>
 						</div>
 					</div>
 					<!-- <div class="search-cont2" v-if="searchType?.i == 0 || searchType?.i == 2">
@@ -456,7 +496,7 @@ onMounted(()=>{
 				</div>
 				<Loading :loading="loading"></Loading>
 				<TeamItem v-for="team in search_res.teams" :team="team"></TeamItem>
-				<GameItem v-for="game in search_res.games" :game="game"></GameItem>
+				<GameItem v-for="game in search_res.games" :game="game" :player-id="props.playerId" :player-name="props.playerName"></GameItem>
 				<PlayerItem v-for="player in search_res.players" :player="player"></PlayerItem>
 
 				<!-- <div v-if="amt == 0 && !loading"> -->
@@ -586,6 +626,13 @@ h3{
 .detail-cont:not(:has(.game-details)){
 	position:sticky;
 	top:0px;
+}
+
+.player-item{
+	border:solid 1px var(--clr-neutral-300);
+	padding:var(--size-200) var(--size-400);
+	border-radius:50px;
+	margin-block:var(--size-200);
 }
 
 </style>

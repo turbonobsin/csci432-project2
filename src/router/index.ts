@@ -37,6 +37,7 @@ const router = createRouter({
 		{
 			path: "/main",
 			component: MainView,
+			props:true,
 			children:[
 				{
 					path:"team/:teamId",
@@ -50,6 +51,26 @@ const router = createRouter({
 				},
 				{
 					path:"game/:gameId",
+					components:{
+						details:GameDetails
+					},
+					props:true,
+					meta:{
+						typeI:1
+					}
+				},
+				{
+					path:"/byplayer/:playerId/:playerName/",
+					components:{
+						details:Empty
+					},
+					props:true,
+					meta:{
+						typeI:1
+					}
+				},
+				{
+					path:"/byplayer/:playerId/:playerName/:gameId",
 					components:{
 						details:GameDetails
 					},

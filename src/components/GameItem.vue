@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import SearchItem from './SearchItem.vue';
-import type { Game } from '@/util';
+import { Game } from '@/util';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
 const props = defineProps<{
-    game:Game;
+    game:Game,
+    playerId?:string,
+    playerName?:string
 }>();
 
 function load(){
-    router.push({path:"/main/game/"+props.game.id});
+    console.warn("----PROPS:",props.playerId,props.playerName,props.game.id);
+    if(props.playerId) router.push({path:`/byplayer/${props.playerId}/${props.playerName}/${props.game.id}`});
+    else router.push({path:"/main/game/"+props.game.id});
 }
 
 </script>

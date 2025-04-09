@@ -9,9 +9,16 @@ import RadioSwitcher from './RadioSwitcher.vue';
 
 const route = useRoute();
 
-const props = defineProps<{
-    gameId:string;
-}>();
+const props = defineProps({
+    gameId:{
+        type:String,
+        required:false
+    },
+    playerId:{
+        type:String,
+        required:false
+    }
+});
 const search_res = useSearchResultsStore();
 const error = useTemplateRef("error");
 
@@ -138,72 +145,90 @@ function filterPlayerStats(){
                 <br>
 
                 <h4 v-if="details.playerStats?.length == 0">No stats available.</h4>
-                <table class="tab" v-for="stat in result">
-                    <tr>
-                        <th>Stat</th>
-                        <th style="width:120px">Value</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Name</div>
-                        </td>
-                        <td>{{ stat.player_name }}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Team</div>
-                        </td>
-                        <td>{{ stat.team }}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Points</div>
-                        </td>
-                        <td>{{ stat.points }}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Assists</div>
-                        </td>
-                        <td>{{ stat.assists }}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Rebounds</div>
-                        </td>
-                        <td>{{ stat.rebounds }}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Steals</div>
-                        </td>
-                        <td>{{ stat.steals }}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Blocks</div>
-                        </td>
-                        <td>{{ stat.blocks }}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Field Goal Percentage</div>
-                        </td>
-                        <td>{{ (stat.field_goal_percentage*100).toFixed(1) }}%</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Three-Point Percentage</div>
-                        </td>
-                        <td>{{ (stat.field_goal3_percentage*100).toFixed(1) }}%</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div>Free Throw Percentage</div>
-                        </td>
-                        <td>{{ (stat.freethrow_percentage*100).toFixed(1) }}%</td>
-                    </tr>
-                </table>
+                <div v-for="stat in result">
+                    <div class="player-ops flx-c sb">
+                        <h3 class="player-title">{{ stat.player_name }}</h3>
+                        <!-- some colors: deeppink, mediumslateblue -->
+                        <RouterLink to="" v-if="props.gameId && props.playerId" class="icon-btn accent3" style="--c:mediumslateblue">
+                            <div class="icon">paid</div>
+                            <div style="font-weight:bold">Place Bet</div>
+                        </RouterLink>
+                        <!-- <RouterLink v-else class="btn accent2 icon-btn" :to="`/byplayer/${stat.player_id}/${stat.player_name}/${props.gameId}`">
+                            <span class="icon">link</span>
+                            Games
+                        </RouterLink> -->
+                        <RouterLink v-else class="icon-btn accent3" :to="`/byplayer/${stat.player_id}/${stat.player_name}/${props.gameId}`">
+                            <div class="icon">sports_esports</div>
+                            <div style="font-weight:bold">Their Games</div>
+                        </RouterLink>
+                    </div>
+                    <table class="tab">
+                        <tr>
+                            <th>Stat</th>
+                            <th style="width:120px">Value</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Name</div>
+                            </td>
+                            <td>{{ stat.player_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Team</div>
+                            </td>
+                            <td>{{ stat.team }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Points</div>
+                            </td>
+                            <td>{{ stat.points }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Assists</div>
+                            </td>
+                            <td>{{ stat.assists }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Rebounds</div>
+                            </td>
+                            <td>{{ stat.rebounds }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Steals</div>
+                            </td>
+                            <td>{{ stat.steals }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Blocks</div>
+                            </td>
+                            <td>{{ stat.blocks }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Field Goal Percentage</div>
+                            </td>
+                            <td>{{ (stat.field_goal_percentage*100).toFixed(1) }}%</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Three-Point Percentage</div>
+                            </td>
+                            <td>{{ (stat.field_goal3_percentage*100).toFixed(1) }}%</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>Free Throw Percentage</div>
+                            </td>
+                            <td>{{ (stat.freethrow_percentage*100).toFixed(1) }}%</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
             <Loading :loading="!details.playerStats"></Loading>
             <!-- <div v-else> -->
@@ -257,6 +282,18 @@ div.details{
     display:flex;
     flex-direction:column;
     gap:var(--size-400);
+}
+
+.player-title{
+    margin-block:var(--size-300);
+}
+
+.player-ops{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-block:var(--size-200);
+    margin-top:var(--size-600);
 }
 
 </style>

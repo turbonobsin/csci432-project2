@@ -102,19 +102,19 @@ export type SearchPlayerRes = {
     meta:SearchMeta;
 };
 
-export type Game = {
-    date:string;
-    datetime:never;
-    home_team:Team;
-    home_team_score:number;
-    period:number;
-    postseason:boolean;
-    season:number;
-    status:string; // Final
-    time:never;
-    visitor_team:Team;
-    visitor_team_score:number;
-    id:number;
+export class Game{
+    date!:string;
+    datetime!:never;
+    home_team!:Team;
+    home_team_score!:number;
+    period!:number;
+    postseason!:boolean;
+    season!:number;
+    status!:string; // Final
+    time!:never;
+    visitor_team!:Team;
+    visitor_team_score!:number;
+    id!:number;
 };
 export type SearchGamesRes = {
     data:Game[];

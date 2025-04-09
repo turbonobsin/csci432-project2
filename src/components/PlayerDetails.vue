@@ -71,6 +71,11 @@ watch(route,()=>{
                 <div>{{ details.player.data.team.full_name }}</div>
             </div>
 
+            <RouterLink class="icon-btn accent3" :to="`/byplayer/${props.playerId}/${details.player.data.first_name+' '+details.player.data.last_name}`">
+                <div class="icon">sports_esports</div>
+                <div style="font-weight:bold">Their Games</div>
+            </RouterLink>
+
             <div class="info-cont">
                 <div class="col2">
                     <div class="flx-c gap4">
