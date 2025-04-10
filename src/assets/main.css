@@ -50,6 +50,11 @@
 	/* --clr-secondary-400: hsl(230, 71%, 45%); */
 	--clr-secondary-400: hsl(230, 51%, 45%);
 
+	/* temp */
+	/* --clr-primary-400:deeppink; */
+	/* --clr-secondary-400:mediumslateblue; */
+	/*  */
+
 	--clr-button-bg:var(--clr-primary-400);
 	--clr-button-hover:var(--clr-primary-500);
 	--clr-button-active:var(--clr-primary-600);
@@ -83,6 +88,12 @@ a{
 }
 .btn.accent:active{
 	background-color:var(--clr-button-active);
+}
+.btn2{
+	color:var(--clr-neutral-900);
+	font-family:"Roboto";
+	font-weight:600;
+	background-color:var(--clr-neutral-100);
 }
 
 .btn.accent2{
@@ -148,6 +159,7 @@ button{
 	padding:var(--size-100) var(--size-200);
 	position:relative;
 	border-radius:50px;
+	overflow:hidden;
 
 	& .icon{
 		color:currentColor;

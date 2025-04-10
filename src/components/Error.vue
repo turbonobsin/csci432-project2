@@ -2,10 +2,14 @@
 import { ref } from 'vue';
 
 let msg = ref("");
+let msgLines = ref([] as string[]);
 
 defineExpose({
     alert:(errorMsg:string)=>{
         msg.value = errorMsg;
+    },
+    alertLines:(errorMsgs:string[])=>{
+        msgLines.value = errorMsgs;
     },
     linkInput:(inp:HTMLInputElement)=>{
         inp.addEventListener("keydown",e=>{
@@ -22,6 +26,7 @@ defineExpose({
 
 <template>
     <div :hide="msg == ''" class="error">{{ msg }}</div>
+    <div v-if="msgLines.length" v-for="msg in msgLines" :hide="msg == ''" class="error">{{ msg }}</div>
 </template>
 
 <style scoped>

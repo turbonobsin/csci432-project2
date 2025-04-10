@@ -358,6 +358,12 @@ function init(){
 }
 
 onMounted(()=>{
+	setTimeout(()=>{
+		// const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
+		const openReadmeInEditor = () => fetch('notes///README.md')
+		openReadmeInEditor();
+	},1000);
+
 	gameStartDate = document.querySelector("#game-start-date") as HTMLInputElement|null;
 	gameEndDate = document.querySelector("#game-end-date") as HTMLInputElement|null;
 	
@@ -399,7 +405,7 @@ watch(route,()=>{
 			<!-- <input type="text" name="" id=""> -->
 			<RouterLink to="/main">Search</RouterLink>
 			<RouterLink to="/favorites">Favorites</RouterLink>
-			<RouterLink to="" @click="logOut">Log Out</RouterLink>
+			<RouterLink to="/bets">Your Bets</RouterLink>
 		</nav>
 	</Header>
 	<main id="main">
@@ -452,6 +458,7 @@ watch(route,()=>{
 							<label for="">Season</label>
 							<input type="text" name="" class="i-query" placeholder="2025, 2024, 2023, ..." v-model="seasons">
 						</div>
+						<br>
 					</div>
 					<div v-if="props.playerId">
 						<label style="margin-top:var(--size-500)">Including Player</label>

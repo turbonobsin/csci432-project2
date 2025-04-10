@@ -9,6 +9,9 @@ import Empty from "@/components/Empty.vue";
 import PlayerDetails from "@/components/PlayerDetails.vue";
 import GameDetails from "@/components/GameDetails.vue";
 import ProfileView from "@/views/ProfileView.vue";
+import PlaceBetView from "@/views/PlaceBetView.vue";
+import BetsView from "@/views/BetsView.vue";
+import BetDetails from "@/components/BetDetails.vue";
 
 const router = createRouter({
 	// history: createWebHistory(import.meta.env.BASE_URL),
@@ -115,6 +118,26 @@ const router = createRouter({
 					},
 					meta:{
 						typeI:2
+					}
+				}
+			]
+		},
+		{
+			path:"/placebet/:playerId/:playerName/:gameId",
+			name:"placebet",
+			component:PlaceBetView,
+			props:true
+		},
+		{
+			path:"/bets",
+			name:"bets",
+			component:BetsView,
+			children:[
+				{
+					path:"details",
+					name:"betdetails",
+					components:{
+						details:BetDetails
 					}
 				}
 			]

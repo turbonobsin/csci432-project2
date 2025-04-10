@@ -17,6 +17,10 @@ const props = defineProps({
     playerId:{
         type:String,
         required:false
+    },
+    playerName:{
+        type:String,
+        required:false,
     }
 });
 const search_res = useSearchResultsStore();
@@ -149,7 +153,7 @@ function filterPlayerStats(){
                     <div class="player-ops flx-c sb">
                         <h3 class="player-title">{{ stat.player_name }}</h3>
                         <!-- some colors: deeppink, mediumslateblue -->
-                        <RouterLink to="" v-if="props.gameId && props.playerId" class="icon-btn accent3" style="--c:mediumslateblue">
+                        <RouterLink :to="`/placebet/${props.playerId}/${props.playerName}/${props.gameId}`" v-if="props.gameId && props.playerId" class="icon-btn accent3" style="--c:mediumslateblue">
                             <div class="icon">paid</div>
                             <div style="font-weight:bold">Place Bet</div>
                         </RouterLink>

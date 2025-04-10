@@ -1,3 +1,4 @@
+import { ref, watch } from "vue";
 
 export const serverUrl = "https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net";
 
@@ -200,3 +201,39 @@ export function getLocalNowDate(){
 	date = new Date(zone);
     return date;
 }
+
+export type Bet = {
+    _id:string;
+    actualStats:{
+        assists:number;
+        points:number;
+        rebounds:number;
+        steals:number;
+        threes:number;
+    };
+    createdAt:string;
+    gameId:number;
+    playerId:number;
+    predictions:{
+        assists:number;
+        points:number;
+        rebounds:number;
+        steals:number;
+        threes:number;
+    };
+    score:number;
+    status:string;
+    updatedAt:string;
+    userId:string;
+};
+
+// 
+let tmpBetData = {};
+try{
+    tmpBetData = JSON.parse(localStorage.getItem("tmpBet")??"{}");
+}
+catch(e){}
+export let tmpBet = ref(tmpBetData as Bet);
+watch(tmpBet,(v,ov)=>{
+    localStorage.setItem("tmpBet",JSON.stringify(tmpBet.value));
+});
