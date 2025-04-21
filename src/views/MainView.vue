@@ -203,19 +203,27 @@ async function searchGames(){
 
 	loading.value = true;
 	
-	let url = new URL(serverUrl+"/games");
+	let startDate = gameStartDate?.valueAsDate;
+	let endDate = gameEndDate?.valueAsDate;
+	
+	let urlBase = serverUrl+"/games";
+	if(props.playerId != null){
+		urlBase = `${serverUrl}/games/${props.playerId}${startDate?"/"+startDate.toISOString():""}${endDate?"/"+endDate.toISOString():""}`;
+	}
+	let url = new URL(urlBase);
 	// if(query.value) url.searchParams.set("name-search",query.value);
 	// if(nextCursor != null) url.searchParams.set("cursor",nextCursor.toString());
 	if(curCursor.value) url.searchParams.set("cursor",curCursor.value.toString());
-	let startDate = gameStartDate?.valueAsDate;
-	let endDate = gameEndDate?.valueAsDate;
-	if(startDate) url.searchParams.set("start_date",startDate.toISOString());
-	if(endDate) url.searchParams.set("end_date",endDate.toISOString());
-	if(useGameSeason.value?.i == 1 && seasons.value){
-		let listStr = seasons.value.toString();
-		listStr = listStr.replace(/\s?[\,\s]\s?/g,",");
-		let list = listStr.split(",");
-		list.forEach(v=>url.searchParams.append("seasons[]",v)); // not sure how to get multiple to work with the endpoint yet (idk what format it's supposed to be) // fixed :D
+
+	if(props.playerId == null){
+		if(startDate) url.searchParams.set("start_date",startDate.toISOString());
+		if(endDate) url.searchParams.set("end_date",endDate.toISOString());
+		if(useGameSeason.value?.i == 1 && seasons.value){
+			let listStr = seasons.value.toString();
+			listStr = listStr.replace(/\s?[\,\s]\s?/g,",");
+			let list = listStr.split(",");
+			list.forEach(v=>url.searchParams.append("seasons[]",v)); // not sure how to get multiple to work with the endpoint yet (idk what format it's supposed to be) // fixed :D
+		}
 	}
 
 	console.log("search game url",url.href);
@@ -232,9 +240,10 @@ async function searchGames(){
 		amt.value = data.data.length;
 
 		curSearchMeta = data.meta;
-
-		pages.value.push(data.meta.next_cursor);
-		console.log("push next:",data.meta.next_cursor,[...pages.value],curCursor.value);
+		if(data.meta){
+			pages.value.push(data.meta.next_cursor);
+			console.log("push next:",data.meta.next_cursor,[...pages.value],curCursor.value);
+		}
 	}
 	else{
 		alert("Failed to get list of games with code: "+res.status+` (${res.statusText})`);
