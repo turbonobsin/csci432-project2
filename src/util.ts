@@ -1,4 +1,5 @@
 import { ref, watch } from "vue";
+import { useUserStore } from "./stores/user";
 
 export const serverUrl = "https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net";
 
@@ -237,3 +238,137 @@ export let tmpBet = ref(tmpBetData as Bet);
 watch(tmpBet,(v,ov)=>{
     localStorage.setItem("tmpBet",JSON.stringify(tmpBet.value));
 });
+
+// global endpoints
+export async function favoritePlayer(player_id:number,onerr?:(res:Response,text:string)=>void){
+    let token = useUserStore()?.token;
+    if(!token) return;
+    
+    let res = await fetch(serverUrl+"/favorite-players",{
+        method:"POST",
+        headers:{
+            Authorization:`Bearer ${token}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            player_id
+        })
+    });
+
+    if(res.ok){
+        return true;
+    }
+    else{
+        console.warn(`Error ${res.status} ${res.statusText} while trying to favorite player with id `+player_id);
+        if(onerr) onerr(res,`Error while trying to favorite player; ${res.status} ${res.statusText}`);
+        return false;
+    }
+}
+export async function removeFavoritePlayer(player_id:number,onerr?:(res:Response,text:string)=>void){
+    let token = useUserStore()?.token;
+    if(!token) return;
+    
+    let res = await fetch(serverUrl+"/favorite-players/"+player_id,{
+        method:"DELETE",
+        headers:{
+            Authorization:`Bearer ${token}`
+        }
+    });
+
+    if(res.ok){
+        return true;
+    }
+    else{
+        console.warn(`Error ${res.status} ${res.statusText} while trying to remove favorite player with id `+player_id);
+        if(onerr) onerr(res,`Error while trying to remove favorite player; ${res.status} ${res.statusText}`);
+        return false;
+    }
+}
+export async function getFavoritePlayers(onerr?:(res:Response,text:string)=>void){
+    let token = useUserStore()?.token;
+    if(!token) return [];
+    
+    let res = await fetch(serverUrl+"/favorite-players",{
+        method:"GET",
+        headers:{
+            Authorization:`Bearer ${token}`
+        }
+    });
+
+    if(res.ok){
+        let data = await res.json();
+        console.log("favorite players",data?.favoritePlayers);
+        return (data.favoritePlayers as number[]).map(Number);
+    }
+    else{
+        console.warn(`Error ${res.status} ${res.statusText} while trying to get favorite players`);
+        if(onerr) onerr(res,`Error while trying to get favorite players; ${res.status} ${res.statusText}`);
+    }
+    return [];
+}
+export async function favoriteTeam(team_id:number,onerr?:(res:Response,text:string)=>void){
+    let token = useUserStore()?.token;
+    if(!token) return;
+    
+    let res = await fetch(serverUrl+"/favorite-teams",{
+        method:"POST",
+        headers:{
+            Authorization:`Bearer ${token}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            team_id
+        })
+    });
+
+    if(res.ok){
+        return true;
+    }
+    else{
+        console.warn(`Error ${res.status} ${res.statusText} while trying to favorite team with id `+team_id);
+        if(onerr) onerr(res,`Error while trying to favorite team; ${res.status} ${res.statusText}`);
+        return false;
+    }
+}
+export async function removeFavoriteTeam(team_id:number,onerr?:(res:Response,text:string)=>void){
+    let token = useUserStore()?.token;
+    if(!token) return;
+    
+    let res = await fetch(serverUrl+"/favorite-teams/"+team_id,{
+        method:"DELETE",
+        headers:{
+            Authorization:`Bearer ${token}`
+        }
+    });
+
+    if(res.ok){
+        return true;
+    }
+    else{
+        console.warn(`Error ${res.status} ${res.statusText} while trying to remove favorite team with id `+team_id);
+        if(onerr) onerr(res,`Error while trying to remove favorite team; ${res.status} ${res.statusText}`);
+        return false;
+    }
+}
+export async function getFavoriteTeams(onerr?:(res:Response,text:string)=>void){
+    let token = useUserStore()?.token;
+    if(!token) return [];
+    
+    let res = await fetch(serverUrl+"/favorite-teams",{
+        method:"GET",
+        headers:{
+            Authorization:`Bearer ${token}`
+        }
+    });
+
+    if(res.ok){
+        let data = await res.json();
+        console.log("favorite teams",data?.favoriteTeams);
+        return (data.favoriteTeams as string[]).map(Number);
+    }
+    else{
+        console.warn(`Error ${res.status} ${res.statusText} while trying to get favorite teams`);
+        if(onerr) onerr(res,`Error while trying to get favorite teams; ${res.status} ${res.statusText}`);
+    }
+    return [];
+}

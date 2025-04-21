@@ -12,8 +12,7 @@ const route = useRoute();
 // const error = useTemplateRef("error");
 
 let bet = tmpBet;
-
-let query = ref("");
+let playerData = ref(undefined as Player|undefined);
 
 const details = ref({game:{},playerStats:[] as PlayerStat[]} as GameDetails);
 
@@ -35,9 +34,28 @@ async function getDetails(){
         details.value.playerStats = data.playerStats;
 
         // filterPlayerStats();
+        getPlayerData(bet.value.playerId);
     }
     else{
         alert("Failed to get game details with code: "+res.status+` (${res.statusText})`);
+    }
+}
+
+async function getPlayerData(playerId:number){
+    let url = new URL(serverUrl+"/players/"+playerId);
+
+    let res = await fetch(url,{
+        method:"GET"
+    });
+
+    if(res.ok){
+        let data = await res.json() as PlayerDetails;
+        console.log("player details",playerId,data);
+
+        playerData.value = data.player.data;
+    }
+    else{
+        alert("Failed to get player details with code: "+res.status+` (${res.statusText})`);
     }
 }
 
@@ -54,6 +72,11 @@ onMounted(()=>{
             <div class="flx-c sb">
                 <h3 class="l-name">{{ details.game.home_team }} <br><span style="font-style:normal;color:var(--clr-primary-400)">versus</span><br> {{ details.game.visitor_team }}</h3>
             </div>
+            <div>
+                <label style="width:unset">Betting on</label>
+                <h3 class="l-name" style="font-size:13px">{{ playerData ? (playerData.first_name+" "+playerData.last_name) : "..." }}</h3>
+            </div>
+
             <div class="flx-c sb" style="margin-block:var(--size-200)">
                 <label style="margin:0px">Game Date</label>
                 <div v-if="details.game.date">{{ new Date(details.game.date).toLocaleString([],{dateStyle:"medium"}) }}</div>

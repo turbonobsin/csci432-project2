@@ -149,6 +149,63 @@ button{
 .click-icon{
 	cursor:pointer;
 }
+.icon[favorite="true"]{
+	font-family:"Material Icons";
+	color:var(--clr-primary-400);
+	position:relative;
+	&::after{
+		content:"favorite";
+		font-family:"Material Icons";
+		color:currentColor;
+		position:absolute;
+		inset:0px;
+		animation:AddFavorite 0.8s alternate forwards ease;
+		border-radius:50%;
+	}
+}
+.icon[favorite="false"]{
+	font-family:"Material Symbols Outlined";
+}
+.icon[favorite="false"][new-change="true"]{
+	animation:RemoveFavorite 0.5s forwards ease-in;
+}
+@keyframes AddFavorite{
+	0%{
+		scale:1;
+		opacity:0.5;
+	}
+	80%{
+		scale:3.5;
+	}
+	100%{
+		opacity:0;
+	}
+}
+@keyframes RemoveFavorite{
+	0%{
+		rotate:0deg;
+		translate:0px 0px;
+		color:var(--clr-neutral-900);
+	}
+	25%{
+		rotate:-5deg;
+		translate:-3px 0px;
+		color:var(--clr-neutral-500);
+	}
+	50%{
+		rotate:5deg;
+		translate:3px 0px;
+	}
+	75%{
+		rotate:-5deg;
+		translate:-3px 0px;
+	}
+	100%{
+		rotate:0deg;
+		translate:0px 0px;
+		color:var(--clr-neutral-900);
+	}
+}
 
 .accent3{
 	--c:teal;

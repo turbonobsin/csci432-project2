@@ -10,6 +10,8 @@ import { onMounted, ref } from 'vue';
 const user = useUserStore();
 const loading = ref(true);
 const bets = ref([] as Bet[]);
+const pendingBets = ref([] as Bet[]);
+const completedBets = ref([] as Bet[]);
 const curPage = ref(0);
 const query = ref("");
 const perPage = 50;
@@ -26,7 +28,8 @@ function previousPage(){
 }
 
 async function eraseItems(){
-    bets.value = [];
+    pendingBets.value = [];
+    completedBets.value = [];
 }
 
 async function runSearch(){
@@ -51,6 +54,8 @@ async function runSearch(){
 		let data = await res.json() as Bet[];
 		
         bets.value = data;
+		completedBets.value = data.filter(v=>v.status != "pending");
+		pendingBets.value = data.filter(v=>v.status == "pending");
         sortedBets.value = data.filter(v=>v.score != null).sort((a,b)=>a.score-b.score);
 		console.log("bet data:",data);
 	}
@@ -117,7 +122,7 @@ onMounted(async ()=>{
 	<main id="main">
 		<div class="search-cont">
 			<div class="filter-cont">
-				<h3>Filters</h3>
+				<!-- <h3>Filters</h3>
 				<br>
 				<hr>
 				<br>
@@ -125,14 +130,16 @@ onMounted(async ()=>{
 					<input type="text" name="" class="i-query" @keydown="runSearch" placeholder="Filter..." v-model="query">
 					<div class="icon click-icon" @click="runSearch">search</div>
 				</div>
-				<br>
+				<br> -->
 				<!-- <div v-show="searchType?.i == 0" class="flx-c sb">
 					<label for="">Conference</label>
 					<RadioSwitcher ref="conference-type" class="conference-type neutral-style" name="conference-type" :i="0" :options="['Either','East','West']"></RadioSwitcher>
 				</div> -->
 
-                <br><br><br>
-                <h3>Scoreboard</h3>
+				<h3>Scoreboard</h3>
+				<br>
+                <!-- <br><br><br> -->
+                <!-- <h3>Scoreboard</h3> -->
                 <table class="tab">
                     <tr>
                         <th>Rank</th>
@@ -166,8 +173,8 @@ onMounted(async ()=>{
                 </table>
 			</div>
 			<div class="result-cont">
-				<div class="flx-c sb">
-					<h3>Results <span v-if="bets.length != 0">({{ bets.length }})</span></h3>
+				<div class="flx-c sb" v-if="completedBets.length != 0">
+					<h3>Completed <span>({{ completedBets.length }})</span></h3>
 					<div class="nav-controls flx-c" style="gap:20px">
 						<label class="label">Page</label>
 						<div>{{ curPage+1 }}</div>
@@ -175,8 +182,18 @@ onMounted(async ()=>{
 						<div class="icon click-icon" @click="nextPage">chevron_right</div>
 					</div>
 				</div>
+				<BetItem v-for="bet in completedBets" :bet="bet"></BetItem>
+				<div class="flx-c sb" v-if="pendingBets.length != 0">
+					<h3>Pending <span>({{ pendingBets.length }})</span></h3>
+						<div class="nav-controls flx-c" style="gap:20px">
+						<label class="label">Page</label>
+						<div>{{ curPage+1 }}</div>
+						<div class="icon click-icon" @click="previousPage">chevron_left</div>
+						<div class="icon click-icon" @click="nextPage">chevron_right</div>
+					</div>
+				</div>
+				<BetItem v-for="bet in pendingBets" :bet="bet"></BetItem>
 				<Loading :loading="loading"></Loading>
-				<BetItem v-for="bet in bets" :bet="bet"></BetItem>
 
 				<!-- <div v-if="amt == 0 && !loading"> -->
 				<h4 class="no-results" :show="bets.length == 0 && !loading">No results.</h4>

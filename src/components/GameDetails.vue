@@ -46,6 +46,12 @@ async function getDetails(){
         details.value.game = data.game;
         details.value.playerStats = data.playerStats;
 
+        if(query.value != "" && props.playerId != null){
+            let p = data.playerStats?.find(v=>v.player_name == props.playerName); // can't use id bc the player id on playerStats isn't correct
+            if(p){
+                playerTeamType.value!.i = (p.team == data.game.home_team ? 0 : 1);
+            }
+        }
         filterPlayerStats();
     }
     else{
@@ -58,6 +64,10 @@ function load(){
     // if(existing) details.value.game = existing;
 
     console.log("load");
+
+    if(props.playerId != null){
+        query.value = props.playerName ?? "";
+    }
 
     getDetails();
 }
@@ -84,7 +94,7 @@ function filterPlayerStats(){
         return;
     }
     console.log(playerTeamType.value!.i,details.value.game.home_team,details.value.game.visitor_team);
-    result.value = (details.value.playerStats ?? []).filter(v=>stringMatch(v.player_name,query.value) && v.team == [details.value.game.home_team,details.value.game.visitor_team][playerTeamType.value!.i]) as PlayerStat[];
+    result.value = (details.value.playerStats ?? []).filter(v=>stringMatch(v.player_name,query.value) && v.team == [details.value.game.home_team,details.value.game.visitor_team][playerTeamType.value!.i]).sort((a,b)=>a.player_name.localeCompare(b.player_name)) as PlayerStat[];
 }
 
 </script>

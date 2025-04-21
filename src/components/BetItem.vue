@@ -88,12 +88,13 @@ function load(){
     <SearchItem title="Bet" color="mediumslateblue" @click="load" v-if="player">
         <div class="flx-c sb">
             <!-- <h3 class="l-name">{{ playerDetails.player.data.first_name+" "+playerDetails.player.data.last_name }}</h3> -->
-            <div class="l-name">Score: {{ bet.score ?? "?" }}</div>
+            <div class="l-name">Score: {{ bet.score ?? "PENDING" }}</div>
             <br><br>
             <!-- <RouterLink style="font-weight:normal;font-family:'Material Symbols Outlined';font-size:28px" class="icon click-icon" :to="`/main/game/${bet.gameId}`">sports_esports</RouterLink> -->
         </div>
         <div class="flx-c sb">
             <div style="font-weight:bold;text-transform:uppercase">{{ bet.status }}</div>
+            <div>{{ new Date(bet.updatedAt).toLocaleString([],{dateStyle:"short",timeStyle:"short"}) }}</div>
             <!-- <div class="flx-c">{{ team.conference }} <span class="icon">{{ team.conference.toLowerCase() }}</span></div> -->
             <!-- <div class="flx-c">{{ team.conference }} <span class="icon">{{ icons[team.conference.toLowerCase()] }}</span></div> -->
         </div>

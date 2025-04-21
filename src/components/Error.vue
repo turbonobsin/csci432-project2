@@ -3,10 +3,21 @@ import { ref } from 'vue';
 
 let msg = ref("");
 let msgLines = ref([] as string[]);
+let to:number|undefined = undefined;
 
 defineExpose({
-    alert:(errorMsg:string)=>{
+    alert:(errorMsg:string,timeout?:number)=>{
+        if(to != undefined){
+            clearTimeout(to);
+            to = undefined;
+        }
         msg.value = errorMsg;
+        if(timeout != null){
+            to = setTimeout(()=>{
+                msg.value = "";
+                to = undefined;
+            },timeout);
+        }
     },
     alertLines:(errorMsgs:string[])=>{
         msgLines.value = errorMsgs;

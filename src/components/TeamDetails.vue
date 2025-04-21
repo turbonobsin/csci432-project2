@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useSearchResultsStore } from '@/stores/search_results';
-import { serverUrl, type Team, type TeamDetails } from '@/util';
+import { favoriteTeam, getFavoritePlayers, getFavoriteTeams, removeFavoriteTeam, serverUrl, type Team, type TeamDetails } from '@/util';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
 import Error from './Error.vue';
 import { useRoute } from 'vue-router';
@@ -13,6 +13,8 @@ const props = defineProps<{
 }>();
 const search_res = useSearchResultsStore();
 const error = useTemplateRef("error");
+const isFavorited = ref(false);
+const newFavoriteChange = ref(false);
 
 const details = ref({} as TeamDetails);
 
@@ -44,20 +46,50 @@ async function getDetails(){
     }
 }
 
-function load(){
+async function load(){
     let existing = search_res.teams.find(v=>v.id == parseInt(props.teamId)) as Team;
     if(existing) details.value.team = existing;
 
     console.log("load");
 
     getDetails();
+
+    isFavorited.value = false;
+    newFavoriteChange.value = false; // not as fun but...
+    let fav = await getFavoriteTeams((res,text)=>{
+        error.value?.alert(text);
+    });
+    if(fav) if(fav.includes(parseInt(props.teamId))){
+        isFavorited.value = true;
+    }
 }
-onMounted(()=>{
+onMounted(async ()=>{
     load();
 });
 watch(route,()=>{
     load();
 });
+
+async function toggleFavorite(){
+    if(isFavorited.value){
+        let res = await removeFavoriteTeam(parseInt(props.teamId),(res,text)=>{
+            error.value?.alert(text,2000);
+        });
+        if(res){
+            isFavorited.value = false;
+            newFavoriteChange.value = true;
+        }
+    }
+    else{
+        let res = await favoriteTeam(parseInt(props.teamId),(res,text)=>{
+            error.value?.alert(text,2000);
+        });
+        if(res){
+            isFavorited.value = true;
+            newFavoriteChange.value = true;
+        }
+    }
+}
 
 </script>
 
@@ -67,7 +99,7 @@ watch(route,()=>{
         <div v-if="details.team" class="team-details-info">
             <div class="flx-c sb">
                 <h3 class="l-name">{{ details.team.full_name }}</h3>
-                <div class="icon click-icon" style="font-family:'Material Symbols Outlined'">favorite</div>
+                <div class="icon click-icon" :favorite="isFavorited" :new-change="newFavoriteChange" @click="toggleFavorite">favorite</div>
             </div>
             <div class="flx-c sb">
                 <div>{{ details.team.abbreviation }}</div>
