@@ -77,7 +77,7 @@ const playerTeamType = useTemplateRef("player-team-type");
 onMounted(()=>{
     load();
 
-    playerTeamType.value!.onInput((i)=>{
+    playerTeamType.value?.onInput((i)=>{
         filterPlayerStats();
     });
 });
@@ -126,7 +126,7 @@ function filterPlayerStats(){
                         <div>{{ details.game.home_team }}</div>
                         <!-- <span class="score win" v-if="details.game.home_team_score > details.game.visitor_team_score">Winner</span> -->
                     </div>
-                    <div class="flx-c gap4">
+                    <div class="flx-c gap4" v-if="details.game.status == 'Final'">
                         <label>Score</label>
                         <div>{{ details.game.home_team_score }}</div>
                     </div>
@@ -136,7 +136,7 @@ function filterPlayerStats(){
                         <label>Visitor Team</label>
                         <div>{{ details.game.visitor_team }}</div>
                     </div>
-                    <div class="flx-c gap4">
+                    <div class="flx-c gap4" v-if="details.game.status == 'Final'">
                         <label>Score</label>
                         <div>{{ details.game.visitor_team_score }}</div>
                     </div>
@@ -156,7 +156,8 @@ function filterPlayerStats(){
             <hr>
 
             <div v-show="details.playerStats">
-                <div v-if="props.gameId && props.playerId">
+                <!-- 3rd check is for not betting on old games -->
+                <div v-if="props.gameId && props.playerId && details.game.status != 'Final'">
                     <label for="">Place bet on</label>
                     <div class="flx-c sb">
                         <div class="l-name">{{ props.playerName }}</div>
@@ -169,100 +170,102 @@ function filterPlayerStats(){
                     <br>
                 </div>
                 
-                <div class="search-cont2">
-					<input ref="i-query" v-on:input="filterPlayerStats" style="width:100%;border-radius:50px" type="text" name="" class="i-query" @keydown="filterPlayerStats" placeholder="Filter by player..." v-model="query">
-				</div>
-                <br>
-                <div class="flx-c gap2">
-                    <label>Team</label>
-                    <RadioSwitcher ref="player-team-type" style="width:100%" name="player-stat-team" :options="['Home','Visitor']"></RadioSwitcher>
-                </div>
-                <br>
-
-                <h4 v-if="details.playerStats?.length == 0">No stats available.</h4>
-                <div v-for="stat in result">
-                    <div class="player-ops flx-c sb">
-                        <h3 class="player-title">{{ stat.player_name }}</h3>
-                        <!-- some colors: deeppink, mediumslateblue -->
-                        <!-- <RouterLink :to="`/placebet/${props.playerId}/${props.playerName}/${props.gameId}`" v-if="props.gameId && props.playerId && props.playerName?.toLowerCase().replace(/\s/g,'') == stat.player_name.toLowerCase().replace(/\s/g,'')" class="icon-btn accent3" style="--c:mediumslateblue">
-                            <div class="icon">paid</div>
-                            <div style="font-weight:bold">Place Bet</div>
-                        </RouterLink> -->
-                        <!-- <RouterLink v-else class="btn accent2 icon-btn" :to="`/byplayer/${stat.player_id}/${stat.player_name}/${props.gameId}`">
-                            <span class="icon">link</span>
-                            Games
-                        </RouterLink> -->
-                        <!-- <RouterLink v-else class="icon-btn accent3" :to="`/byplayer/${stat.player_id}/${stat.player_name}/${props.gameId}`">
-                            <div class="icon">sports_esports</div>
-                            <div style="font-weight:bold">Their Games</div>
-                        </RouterLink> -->
+                <div v-if="details.game.status == 'Final'">
+                    <div class="search-cont2">
+                        <input ref="i-query" v-on:input="filterPlayerStats" style="width:100%;border-radius:50px" type="text" name="" class="i-query" @keydown="filterPlayerStats" placeholder="Filter by player..." v-model="query">
                     </div>
-                    <table class="tab">
-                        <tr>
-                            <th>Stat</th>
-                            <th style="width:120px">Value</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Name</div>
-                            </td>
-                            <td>{{ stat.player_name }}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Team</div>
-                            </td>
-                            <td>{{ stat.team }}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Points</div>
-                            </td>
-                            <td>{{ stat.points }}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Assists</div>
-                            </td>
-                            <td>{{ stat.assists }}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Rebounds</div>
-                            </td>
-                            <td>{{ stat.rebounds }}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Steals</div>
-                            </td>
-                            <td>{{ stat.steals }}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Blocks</div>
-                            </td>
-                            <td>{{ stat.blocks }}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Field Goal Percentage</div>
-                            </td>
-                            <td>{{ (stat.field_goal_percentage*100).toFixed(1) }}%</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Three-Point Percentage</div>
-                            </td>
-                            <td>{{ (stat.field_goal3_percentage*100).toFixed(1) }}%</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div>Free Throw Percentage</div>
-                            </td>
-                            <td>{{ (stat.freethrow_percentage*100).toFixed(1) }}%</td>
-                        </tr>
-                    </table>
+                    <br>
+                    <div class="flx-c gap2">
+                        <label>Team</label>
+                        <RadioSwitcher ref="player-team-type" style="width:100%" name="player-stat-team" :options="['Home','Visitor']"></RadioSwitcher>
+                    </div>
+                    <br>
+
+                    <h4 v-if="details.playerStats?.length == 0">No stats available.</h4>
+                    <div v-for="stat in result">
+                        <div class="player-ops flx-c sb">
+                            <h3 class="player-title">{{ stat.player_name }}</h3>
+                            <!-- some colors: deeppink, mediumslateblue -->
+                            <!-- <RouterLink :to="`/placebet/${props.playerId}/${props.playerName}/${props.gameId}`" v-if="props.gameId && props.playerId && props.playerName?.toLowerCase().replace(/\s/g,'') == stat.player_name.toLowerCase().replace(/\s/g,'')" class="icon-btn accent3" style="--c:mediumslateblue">
+                                <div class="icon">paid</div>
+                                <div style="font-weight:bold">Place Bet</div>
+                            </RouterLink> -->
+                            <!-- <RouterLink v-else class="btn accent2 icon-btn" :to="`/byplayer/${stat.player_id}/${stat.player_name}/${props.gameId}`">
+                                <span class="icon">link</span>
+                                Games
+                            </RouterLink> -->
+                            <!-- <RouterLink v-else class="icon-btn accent3" :to="`/byplayer/${stat.player_id}/${stat.player_name}/${props.gameId}`">
+                                <div class="icon">sports_esports</div>
+                                <div style="font-weight:bold">Their Games</div>
+                            </RouterLink> -->
+                        </div>
+                        <table class="tab">
+                            <tr>
+                                <th>Stat</th>
+                                <th style="width:120px">Value</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Name</div>
+                                </td>
+                                <td>{{ stat.player_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Team</div>
+                                </td>
+                                <td>{{ stat.team }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Points</div>
+                                </td>
+                                <td>{{ stat.points }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Assists</div>
+                                </td>
+                                <td>{{ stat.assists }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Rebounds</div>
+                                </td>
+                                <td>{{ stat.rebounds }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Steals</div>
+                                </td>
+                                <td>{{ stat.steals }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Blocks</div>
+                                </td>
+                                <td>{{ stat.blocks }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Field Goal Percentage</div>
+                                </td>
+                                <td>{{ (stat.field_goal_percentage*100).toFixed(1) }}%</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Three-Point Percentage</div>
+                                </td>
+                                <td>{{ (stat.field_goal3_percentage*100).toFixed(1) }}%</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>Free Throw Percentage</div>
+                                </td>
+                                <td>{{ (stat.freethrow_percentage*100).toFixed(1) }}%</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
             <Loading :loading="!details.playerStats"></Loading>

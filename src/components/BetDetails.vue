@@ -56,7 +56,7 @@ watch(curBetGame!,(v)=>{
                         <div>{{ curBetGame.home_team }}</div>
                         <!-- <span class="score win" v-if="details.game.home_team_score > details.game.visitor_team_score">Winner</span> -->
                     </div>
-                    <div class="flx-c gap4">
+                    <div class="flx-c gap4" v-if="curBetGame.status == 'Final'">
                         <label>Score</label>
                         <div>{{ curBetGame.home_team_score }}</div>
                     </div>
@@ -66,7 +66,7 @@ watch(curBetGame!,(v)=>{
                         <label>Visitor Team</label>
                         <div>{{ curBetGame.visitor_team }}</div>
                     </div>
-                    <div class="flx-c gap4">
+                    <div class="flx-c gap4" v-if="curBetGame.status == 'Final'">
                         <label>Score</label>
                         <div>{{ curBetGame.visitor_team_score }}</div>
                     </div>
@@ -80,7 +80,7 @@ watch(curBetGame!,(v)=>{
                 </div>
                 <div class="flx-c gap4">
                     <label>Status</label>
-                    <div>{{ curBetGame.status }}</div>
+                    <div>{{ curBetGame.status == "Final" ? curBetGame.status : "Upcoming" }}</div>
                 </div>
             </div>
             <hr><br>

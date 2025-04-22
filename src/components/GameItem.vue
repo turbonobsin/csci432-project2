@@ -14,6 +14,11 @@ const props = defineProps<{
 
 function load(){
     console.warn("----PROPS:",props.playerId,props.playerName,props.game.id);
+    scrollTo({
+        left:0,
+        top:0,
+        behavior:"smooth"
+    });
     if(props.playerId) router.push({path:`/byplayer/${props.playerId}/${props.playerName}/${props.game.id}`});
     else router.push({path:"/main/game/"+props.game.id});
 }
