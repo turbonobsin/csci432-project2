@@ -452,7 +452,7 @@ watch(route,()=>{
 						<input type="date" id="game-end-date" ref="game-end-date2">
 					</div>
 					<br>
-					<div class="flx-c gap4">
+					<div class="flx-c gap4" v-if="!props.playerId">
 						<label class="nm">Season</label>
 						<RadioSwitcher ref="use-game-season" class="neutral-style" name="use-game-season" :options="['Any','Custom']"></RadioSwitcher>
 					</div>

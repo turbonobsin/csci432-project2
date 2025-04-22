@@ -122,8 +122,8 @@ async function runSearch(){
 		let data = await res.json() as Bet[];
 		
         bets.value = data;
-		completedBets.value = data.filter(v=>v.status != "pending");
-		pendingBets.value = data.filter(v=>v.status == "pending");
+		completedBets.value = data.filter(v=>v.status != "pending").sort((a,b)=>new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime());
+		pendingBets.value = data.filter(v=>v.status == "pending").sort((a,b)=>new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime());
         sortedBets.value = data.filter(v=>v.score != null).sort((a,b)=>a.score-b.score);
 		console.log("bet data:",data);
 	}

@@ -73,6 +73,11 @@ async function getPlayerDetails(){
 function load(){
     tmpBet.value = props.bet;
     // console.log("tmpbet",tmpBet.value);
+    scrollTo({
+        left:0,
+        top:0,
+        behavior:"smooth"
+    });
     router.push({path:"/bets/details"});
 }
 
