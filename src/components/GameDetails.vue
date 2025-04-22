@@ -108,7 +108,7 @@ function filterPlayerStats(){
                 <h3 class="l-name">{{ details.game.home_team ?? "..." }} <br><span style="font-style:normal;color:var(--clr-primary-400)">versus</span><br> {{ details.game.visitor_team ?? "..." }}</h3>
             </div>
             <div class="flx-c sb" style="margin-block:var(--size-200)">
-                <div>
+                <div v-if="details.playerStats">
                     <span v-if="details.game.status == 'Final'">
                         <span class="score" :win="details.game.home_team_score > details.game.visitor_team_score ? 1 : details.game.home_team_score == details.game.visitor_team_score ? 2 : 0">{{ details.game.home_team_score }}</span> / <span class="score" :win="details.game.home_team_score < details.game.visitor_team_score ? 1 : details.game.home_team_score == details.game.visitor_team_score ? 2 : 0">{{ details.game.visitor_team_score }}</span>
                     </span>
@@ -126,7 +126,7 @@ function filterPlayerStats(){
                         <div>{{ details.game.home_team }}</div>
                         <!-- <span class="score win" v-if="details.game.home_team_score > details.game.visitor_team_score">Winner</span> -->
                     </div>
-                    <div class="flx-c gap4" v-if="details.game.status == 'Final'">
+                    <div class="flx-c gap4" v-show="details.game.status == 'Final'">
                         <label>Score</label>
                         <div>{{ details.game.home_team_score }}</div>
                     </div>
@@ -136,7 +136,7 @@ function filterPlayerStats(){
                         <label>Visitor Team</label>
                         <div>{{ details.game.visitor_team }}</div>
                     </div>
-                    <div class="flx-c gap4" v-if="details.game.status == 'Final'">
+                    <div class="flx-c gap4" v-show="details.game.status == 'Final'">
                         <label>Score</label>
                         <div>{{ details.game.visitor_team_score }}</div>
                     </div>
@@ -170,7 +170,7 @@ function filterPlayerStats(){
                     <br>
                 </div>
                 
-                <div v-if="details.game.status == 'Final'">
+                <div v-show="details.game.status == 'Final'">
                     <div class="search-cont2">
                         <input ref="i-query" v-on:input="filterPlayerStats" style="width:100%;border-radius:50px" type="text" name="" class="i-query" @keydown="filterPlayerStats" placeholder="Filter by player..." v-model="query">
                     </div>
