@@ -128,31 +128,32 @@ export type PlayerDetails = {
         data:Player;
     }
     stats:{
-        data:{
-            ast:number;
-            blk:number;
-            dreb:number;
-            fg3_pct:number;
-            fg3a:number;
-            fg3m:number;
-            fg_pct:number;
-            fga:number;
-            fgm:number;
-            ft_pct:number;
-            fta:number;
-            ftm:number;
-            games_played:number;
-            min:string;
-            oreb:number;
-            pf:number;
-            player_id:number;
-            pts:number;
-            reb:number;
-            season:number;
-            stl:number;
-            turnover:number;
-        }[];
-    }
+        data:PlayerDetailsStat[]
+    };
+};
+export type PlayerDetailsStat = {
+    ast:number;
+    blk:number;
+    dreb:number;
+    fg3_pct:number;
+    fg3a:number;
+    fg3m:number;
+    fg_pct:number;
+    fga:number;
+    fgm:number;
+    ft_pct:number;
+    fta:number;
+    ftm:number;
+    games_played:number;
+    min:string;
+    oreb:number;
+    pf:number;
+    player_id:number;
+    pts:number;
+    reb:number;
+    season:number;
+    stl:number;
+    turnover:number;
 };
 
 export type GameDetails = {
@@ -239,6 +240,10 @@ watch(tmpBet,(v,ov)=>{
     localStorage.setItem("tmpBet",JSON.stringify(tmpBet.value));
 });
 
+export const curBetLoading = ref(false);
+export const curBetPlayer = ref(undefined as Player|undefined);
+export const curBetGame = ref(undefined as GameSimple|undefined);
+
 // global endpoints
 export async function favoritePlayer(player_id:number,onerr?:(res:Response,text:string)=>void){
     let token = useUserStore()?.token;
@@ -297,7 +302,7 @@ export async function getFavoritePlayers(onerr?:(res:Response,text:string)=>void
 
     if(res.ok){
         let data = await res.json();
-        console.log("favorite players",data?.favoritePlayers);
+        // console.log("favorite players",data?.favoritePlayers);
         return (data.favoritePlayers as number[]).map(Number);
     }
     else{
@@ -363,7 +368,7 @@ export async function getFavoriteTeams(onerr?:(res:Response,text:string)=>void){
 
     if(res.ok){
         let data = await res.json();
-        console.log("favorite teams",data?.favoriteTeams);
+        // console.log("favorite teams",data?.favoriteTeams);
         return (data.favoriteTeams as string[]).map(Number);
     }
     else{
@@ -372,3 +377,64 @@ export async function getFavoriteTeams(onerr?:(res:Response,text:string)=>void){
     }
     return [];
 }
+
+export async function getTeamDetails(teamId:string|number){
+    let url = new URL(serverUrl+"/teams/"+teamId);
+
+    let res = await fetch(url,{
+        method:"GET"
+    });
+
+    if(res.ok){
+        let data = await res.json() as TeamDetails;
+        // console.log("team details",teamId,data);
+
+        return data.team;
+    }
+    else{
+        console.warn("Failed to get team details with code: "+res.status+` (${res.statusText})`);
+    }
+}
+export async function getPlayerDetails(playerId:string|number){
+    let url = new URL(serverUrl+"/players/"+playerId);
+
+    let res = await fetch(url,{
+        method:"GET"
+    });
+
+    if(res.ok){
+        let data = await res.json() as PlayerDetails;
+        // console.log("player details",playerId,data);
+
+        return data.player.data;
+    }
+    else{
+        console.warn("Failed to get player details with code: "+res.status+` (${res.statusText})`);
+    }
+}
+
+function runIconCache(){
+    let icons = [
+        "sports_basketball",
+        "favorite",
+        "search",
+        "sports_esports",
+    ];
+    let divs:HTMLElement[] = [];
+    let tempCont = document.createElement("div");
+    tempCont.className = "icon-cache-cont";
+    document.body.appendChild(tempCont);
+
+    for(const icon of icons){
+        let d1 = document.createElement("div");
+        d1.className = "icon";
+        d1.textContent = icon;
+        let d2 = document.createElement("div");
+        d2.className = "icon outline";
+        d2.textContent = icon;
+        divs.push(d1,d2);
+        tempCont.appendChild(d1);
+        tempCont.appendChild(d2);
+    }
+}
+runIconCache();

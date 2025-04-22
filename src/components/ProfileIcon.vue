@@ -22,6 +22,10 @@ async function logout(){
 		user.$reset();
 		router.push({name:"home"});
 	}
+    else if(res.status == 401){
+		user.$reset();
+		router.push({name:"home"}); // <-- we want to logout anyways
+	}
 	else{
 		alert("Failed to logout with code: "+res.status+` (${res.statusText})`);
 		console.error("Failed to logout with code: "+res.status+` (${res.statusText})`);

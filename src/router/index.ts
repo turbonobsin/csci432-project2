@@ -12,6 +12,9 @@ import ProfileView from "@/views/ProfileView.vue";
 import PlaceBetView from "@/views/PlaceBetView.vue";
 import BetsView from "@/views/BetsView.vue";
 import BetDetails from "@/components/BetDetails.vue";
+import { useUserStore } from "@/stores/user";
+import FavoritesView from "@/views/FavoritesView.vue";
+import DetailsPanelWrapper from "@/components/DetailsPanelWrapper.vue";
 
 const router = createRouter({
 	// history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,16 +24,25 @@ const router = createRouter({
 			path: "/",
 			name: "home",
 			component: HomeView,
+			meta:{
+				noAuth:true
+			}
 		},
 		{
 			path: "/join",
 			name: "join",
-			component: JoinView
+			component: JoinView,
+			meta:{
+				noAuth:true
+			}
 		},
 		{
 			path: "/login",
 			name: "login",
-			component: LogInView
+			component: LogInView,
+			meta:{
+				noAuth:true
+			}
 		},
 		{	
 			path:"/profile",
@@ -141,8 +153,79 @@ const router = createRouter({
 					}
 				}
 			]
+		},
+		{
+			path:"/favorites",
+			// name:"favorites",
+			component:FavoritesView,
+			redirect:{name:"favorites"},
+			children:[
+				{
+					path:"team",
+					name:"favorites",
+					components:{
+						details:DetailsPanelWrapper
+					},
+					meta:{
+						typeI:0
+					}
+				},
+				{
+					path:"team/:teamId",
+					components:{
+						details:DetailsPanelWrapper
+					},
+					meta:{
+						typeI:0
+					},
+					props:true
+				},
+				{
+					path:"player",
+					components:{
+						details:DetailsPanelWrapper
+					},
+					meta:{
+						typeI:1
+					}
+				},
+				{
+					path:"player/:playerId",
+					components:{
+						details:DetailsPanelWrapper
+					},
+					meta:{
+						typeI:1
+					},
+					props:true
+				}
+			]
 		}
 	],
 })
 
 export default router;
+
+export function registerRouterGuards(){
+	const userStore = useUserStore();
+
+	// global nav guard
+	router.beforeEach(async (to,from)=>{
+		// 404 to home
+		if(to.matched.length == 0){
+			if(userStore.token){
+				return "/main";
+			}
+			return "/";
+		}
+		
+		if(!to.meta.noAuth){ // no auth to home
+			if(userStore.token) return;
+			return "/";
+		}
+		else{ // auth to main
+			if(userStore.token) return "/main";
+			return;
+		}
+	});
+}

@@ -15,4 +15,8 @@ import Hero from '@/components/Hero.vue';
 </template>
 
 <style scoped>
+body{
+	/* background:repeating-linear-gradient(whitesmoke 0px, whitesmoke 1px, transparent 1px, transparent 20px); */
+	/* background-repeat: repeat; */
+}
 </style>

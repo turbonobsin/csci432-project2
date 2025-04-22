@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router';
 
 let form = useTemplateRef("form");
 let err = useTemplateRef("error");
+let success = useTemplateRef("success");
 
 const user = useUserStore();
 const router = useRouter();
@@ -17,7 +18,7 @@ let loading = ref(false);
 
 async function getProfile(){
 	if(editMode.value) return;
-	
+
 	let url = new URL(serverUrl+"/user/me");
 	let res = await fetch(url.href,{
 		method:"GET",
@@ -64,16 +65,20 @@ async function saveProfile(){
 
 	loading.value = true;
 
+	let data = {
+		username:username.value,
+		email:email.value,
+	} as any;
+	if(password.value) data.password = password.value;
+	console.log("new password",password.value);
+
 	let res = await fetch(serverUrl+"/user/me",{
 		method:"PATCH",
 		headers:{
 			Authorization:`Bearer ${user.token}`,
 			"Content-Type":"application/json"
 		},
-		body:JSON.stringify({
-			username:username.value,
-			email:email.value
-		})
+		body:JSON.stringify(data)
 	});
 
 	if(res.ok){
@@ -97,6 +102,7 @@ async function saveProfile(){
 let editMode = ref(false);
 let username = ref(user.user.username);
 let email = ref(user.user.email);
+let password = ref("");
 
 function hasUnsavedChanges(){
 	if(username.value != user.user.username) return true;
@@ -135,6 +141,29 @@ async function deleteAccount(){
 		console.error("Failed to delete account",res.status,res.statusText);
 	}
 }
+async function clearFavorites(){
+	if(!confirm("Are you sure you want to clear all your favorite teams and players?\n\nThis action cannot be reversed!")) return;
+	
+	let url = new URL(serverUrl+"/user/me");
+	let res = await fetch(url.href,{
+		method:"PATCH",
+		headers:{
+			Authorization:`Bearer ${user.token}`
+		},
+		body:JSON.stringify({
+			favoriteTeams:[],
+			favoritePlayers:[]
+		})
+	});
+
+	if(res.ok){
+		success.value?.alert("Successfully cleared all favorites.",4000);
+	}
+	else{
+		err.value?.alert("Failed to clear favorites with status code: "+res.status+` (${res.statusText})`);
+		console.error("Failed to clear favorites",res.status,res.statusText);
+	}
+}
 
 onMounted(()=>{
 	getProfile(); // just in case
@@ -170,8 +199,13 @@ onMounted(()=>{
 					<input v-if="editMode" type="text" name="email" id="i-email" v-model="email" tabindex="1">
 					<h4 v-else>{{ user.user.email }}</h4>
 				</div>
+				<div class="form-row" v-if="editMode">
+					<label for="i-password">New Password</label>
+					<input type="password" name="email" id="i-password" v-model="password" tabindex="1">
+				</div>
 
 				<Error ref="error"></Error>
+				<Error ref="success" style="color:limegreen"></Error>
 				<!-- <Loading :loading="loading"></loading> -->
 
 				<br><br><br>
@@ -186,12 +220,18 @@ onMounted(()=>{
 					</button>
 				</div>
 
-				<br><br><hr><br><br>
-				<button class="btn accent2 icon-cont" tabindex="6" @click="deleteAccount" style="width:max-content">
-					<div class="material-icons">delete</div>
-					<!-- <div class="material-icons">warning</div> -->
-					Delete Account
-				</button>
+				<br><br><hr><br>
+				<div class="flx-c sb">
+					<button v-if="false" class="btn accent2 icon-cont" tabindex="6" @click="clearFavorites" style="width:max-content;">
+						<div class="material-icons">close</div>
+						Clear Favorites
+					</button>
+					<button class="btn accent2 icon-cont" tabindex="6" @click="deleteAccount" style="width:max-content">
+						<div class="material-icons">delete</div>
+						<!-- <div class="material-icons">warning</div> -->
+						Delete Account
+					</button>
+				</div>
 			</div>
 		</div>
 	</main>

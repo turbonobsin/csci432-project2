@@ -4,7 +4,7 @@ import Header from '@/components/Header.vue';
 import Loading from '@/components/Loading.vue';
 import router from '@/router';
 import { useUserStore } from '@/stores/user';
-import { serverUrl, type Bet } from '@/util';
+import { curBetGame, curBetLoading, curBetPlayer, serverUrl, type Bet, type GameDetails, type GameSimple, type Player, type PlayerDetails } from '@/util';
 import { onMounted, ref } from 'vue';
 
 const user = useUserStore();
@@ -30,6 +30,74 @@ function previousPage(){
 async function eraseItems(){
     pendingBets.value = [];
     completedBets.value = [];
+}
+
+const playersLoaded = new Map<number,boolean>();
+const gamesLoaded = new Map<number,boolean>();
+const playerDetails = ref(new Map<number,Player>());
+const gameDetails = ref(new Map<number,GameSimple>());
+
+async function getGameDetails(bet:Bet){
+	let existing = gameDetails.value.get(bet.gameId);
+	if(existing){
+		console.log("game was already loaded",existing);
+		curBetGame.value = existing;
+		await getPlayerDetails(bet.playerId);
+		return;
+	}
+	if(gamesLoaded.has(bet.gameId)) return;
+	gamesLoaded.set(bet.gameId,true);
+    let url = new URL(serverUrl+"/games/"+bet.gameId);
+
+    // error.value?.clear();
+    gameDetails.value.delete(bet.gameId);
+
+    let res = await fetch(url,{
+        method:"GET"
+    });
+
+    if(res.ok){
+        let data = await res.json() as GameDetails;
+
+        // details.value.game = data.game;
+        // details.value.playerStats = data.playerStats;
+		console.log("game details",data.game);
+		gameDetails.value.set(bet.gameId,data.game);
+		if(curBetLoading.value) curBetGame.value = data.game;
+
+        // filterPlayerStats();
+        await getPlayerDetails(bet.playerId);
+    }
+    else{
+        console.warn("Failed to get game details with code: "+res.status+` (${res.statusText})`);
+    }
+}
+
+async function getPlayerDetails(playerId:number){
+	let existing = playerDetails.value.get(playerId);
+	if(existing){
+		console.log("player was already loaded",existing);
+		curBetPlayer.value = existing;
+		return;
+	}
+	if(playersLoaded.has(playerId)) return;
+	playersLoaded.set(playerId,true);
+    let url = new URL(serverUrl+"/players/"+playerId);
+
+    let res = await fetch(url,{
+        method:"GET"
+    });
+
+    if(res.ok){
+        let data = await res.json() as PlayerDetails;
+        console.log("player details",playerId,data);
+		if(curBetLoading.value) curBetPlayer.value = data.player.data;
+
+        playerDetails.value.set(playerId,data.player.data);
+    }
+    else{
+        console.warn("Failed to get player details with code: "+res.status+` (${res.statusText})`);
+    }
 }
 
 async function runSearch(){
@@ -107,7 +175,23 @@ onMounted(async ()=>{
         if(b.score > worst) worst = b.score;
     }
     worstScore.value = worst.toFixed(1).toString();
+
+	// 
+	for(const b of bets.value){
+		getGameDetails(b);
+	}
 });
+
+async function fetchBet(bet:Bet){
+	if(curBetLoading.value) return; // cancel new load when one is already loading?
+
+	curBetPlayer.value = undefined;
+	curBetGame.value = undefined;
+	
+	curBetLoading.value = true;
+	await getGameDetails(bet);
+	curBetLoading.value = false;
+}
 
 </script>
 
@@ -176,23 +260,23 @@ onMounted(async ()=>{
 				<div class="flx-c sb" v-if="completedBets.length != 0">
 					<h3>Completed <span>({{ completedBets.length }})</span></h3>
 					<div class="nav-controls flx-c" style="gap:20px">
-						<label class="label">Page</label>
-						<div>{{ curPage+1 }}</div>
-						<div class="icon click-icon" @click="previousPage">chevron_left</div>
-						<div class="icon click-icon" @click="nextPage">chevron_right</div>
+						<!-- <label class="label">Page</label> -->
+						<!-- <div>{{ curPage+1 }}</div> -->
+						<!-- <div class="icon click-icon" @click="previousPage">chevron_left</div> -->
+						<!-- <div class="icon click-icon" @click="nextPage">chevron_right</div> -->
 					</div>
 				</div>
-				<BetItem v-for="bet in completedBets" :bet="bet"></BetItem>
+				<BetItem v-for="bet in completedBets" :bet="bet" @click="fetchBet(bet)" :game="gameDetails.get(bet.gameId)" :player="playerDetails.get(bet.playerId)"></BetItem>
 				<div class="flx-c sb" v-if="pendingBets.length != 0">
 					<h3>Pending <span>({{ pendingBets.length }})</span></h3>
-						<div class="nav-controls flx-c" style="gap:20px">
-						<label class="label">Page</label>
-						<div>{{ curPage+1 }}</div>
-						<div class="icon click-icon" @click="previousPage">chevron_left</div>
-						<div class="icon click-icon" @click="nextPage">chevron_right</div>
+					<div class="nav-controls flx-c" style="gap:20px">
+						<!-- <label class="label">Page</label> -->
+						<!-- <div>{{ curPage+1 }}</div> -->
+						<!-- <div class="icon click-icon" @click="previousPage">chevron_left</div> -->
+						<!-- <div class="icon click-icon" @click="nextPage">chevron_right</div> -->
 					</div>
 				</div>
-				<BetItem v-for="bet in pendingBets" :bet="bet"></BetItem>
+				<BetItem v-for="bet in pendingBets" :bet="bet" @click="fetchBet(bet)" :game="gameDetails.get(bet.gameId)" :player="playerDetails.get(bet.playerId)"></BetItem>
 				<Loading :loading="loading"></Loading>
 
 				<!-- <div v-if="amt == 0 && !loading"> -->

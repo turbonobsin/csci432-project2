@@ -275,9 +275,6 @@ body{
 	/* font-family: Boldonse; */
 	/* font-family: Doto; */
 
-	background:repeating-linear-gradient(whitesmoke 0px, whitesmoke 1px, transparent 1px, transparent 20px);
-	background-repeat: repeat;
-
 	overflow-y:scroll;
 	overflow-x:hidden;
 }
@@ -460,4 +457,13 @@ input[type="date"]{
 
 .fw{
 	width:100%;
+}
+
+.icon-cache-cont{
+	position:absolute;
+	top:0px;
+	left:0px;
+	z-index:0;
+	pointer-events:none;
+	opacity:0;
 }

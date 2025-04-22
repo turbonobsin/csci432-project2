@@ -46,6 +46,10 @@ async function logOut(e:Event){
 		user.$reset();
 		router.push({name:"home"});
 	}
+	else if(res.status == 401){
+		user.$reset();
+		router.push({name:"home"}); // <-- we want to logout anyways
+	}
 	else{
 		alert("Failed to logout with code: "+res.status+` (${res.statusText})`);
 		console.error("Failed to logout with code: "+res.status+` (${res.statusText})`);
@@ -146,10 +150,7 @@ async function searchPlayers(nextCursor?:number|null){
 	
 	let url = new URL(serverUrl+"/players");
 	if(query.value) url.searchParams.set("name-search",query.value);
-	// if(nextCursor != null) url.searchParams.set("cursor",nextCursor.toString());
 	if(curCursor.value) url.searchParams.set("cursor",curCursor.value.toString());
-	
-	// url.searchParams.set("conference","east");
 	
 	let res = await fetch(url.href,{
 		method:"GET"
@@ -367,12 +368,6 @@ function init(){
 }
 
 onMounted(()=>{
-	setTimeout(()=>{
-		// const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
-		const openReadmeInEditor = () => fetch('notes///README.md')
-		openReadmeInEditor();
-	},1000);
-
 	gameStartDate = document.querySelector("#game-start-date") as HTMLInputElement|null;
 	gameEndDate = document.querySelector("#game-end-date") as HTMLInputElement|null;
 	
@@ -530,7 +525,6 @@ watch(route,()=>{
 <style>
 body{
 	background:var(--clr-neutral-100);
-	/* background:red; */
 }
 </style>
 <style scoped>
@@ -633,8 +627,13 @@ h3{
 	/* top:0px; */
 	right:var(--size-400);
 	padding:var(--size-400);
-	height:calc(100vh - 150px);
+	/* height:calc(100vh - 150px); */
+	height:calc(100vh - 20px);
 	border-radius:var(--size-100);
+
+	/* max-height:calc(100vh - 100px); */
+    /* overflow-y:auto; */
+    /* overflow-x:hidden; */
 
 	/* overflow-y:auto; */
     /* overflow-x:hidden; */

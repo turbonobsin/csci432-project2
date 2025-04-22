@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { serverUrl, tmpBet, wait, type Bet, type GameDetails, type PlayerDetails, type PlayerStat, type Team } from '@/util';
+import { serverUrl, tmpBet, wait, type Bet, type GameDetails, type GameSimple, type Player, type PlayerDetails, type PlayerStat, type Team } from '@/util';
 import { onMounted, ref } from 'vue';
 import SearchItem from './SearchItem.vue';
 import { useRouter } from 'vue-router';
+import LoadingHorz from './LoadingHorz.vue';
 
 const router = useRouter();
 
 const props = defineProps<{
     bet:Bet;
+    game?:GameSimple;
+    player?:Player;
 }>();
 
 const details = ref({game:{},playerStats:[] as PlayerStat[]} as GameDetails);
@@ -69,6 +72,7 @@ async function getPlayerDetails(){
 
 function load(){
     tmpBet.value = props.bet;
+    // console.log("tmpbet",tmpBet.value);
     router.push({path:"/bets/details"});
 }
 
@@ -86,14 +90,19 @@ function load(){
 
 <template>
     <SearchItem title="Bet" color="mediumslateblue" @click="load" v-if="player">
-        <div class="flx-c sb">
+        <div class="flx-c sb" v-if="props.player && props.game">
             <!-- <h3 class="l-name">{{ playerDetails.player.data.first_name+" "+playerDetails.player.data.last_name }}</h3> -->
             <div class="l-name">Score: {{ bet.score ?? "PENDING" }}</div>
-            <br><br>
             <!-- <RouterLink style="font-weight:normal;font-family:'Material Symbols Outlined';font-size:28px" class="icon click-icon" :to="`/main/game/${bet.gameId}`">sports_esports</RouterLink> -->
+            <div style="text-align:right;font-size:13px" class="l-name">
+                {{ props.player ? (props.player.first_name+" "+props.player.last_name) : "..." }}
+            </div>
         </div>
+        <LoadingHorz v-if="!props.game || !props.player" :loading="true"></LoadingHorz>
+        <br>
         <div class="flx-c sb">
-            <div style="font-weight:bold;text-transform:uppercase">{{ bet.status }}</div>
+            <!-- <div style="font-weight:bold;text-transform:uppercase">{{ bet.status }}</div> -->
+            <div style="font-weight:normal;text-transform:uppercase;font-size:11px">{{ game ? (game.home_team+" vs "+game.visitor_team) : "" }}</div>
             <div>{{ new Date(bet.updatedAt).toLocaleString([],{dateStyle:"short",timeStyle:"short"}) }}</div>
             <!-- <div class="flx-c">{{ team.conference }} <span class="icon">{{ team.conference.toLowerCase() }}</span></div> -->
             <!-- <div class="flx-c">{{ team.conference }} <span class="icon">{{ icons[team.conference.toLowerCase()] }}</span></div> -->

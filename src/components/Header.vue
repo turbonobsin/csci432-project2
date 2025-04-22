@@ -63,4 +63,11 @@ header{
     /* background-color:whitesmoke; */
 }
 
+:deep(a.router-link-active){
+    /* color:var(--clr-neutral-700); */
+    /* border-bottom:solid 3px currentColor */
+    border-bottom:solid 3px var(--clr-neutral-300);
+    line-height:1.8;
+}
+
 </style>

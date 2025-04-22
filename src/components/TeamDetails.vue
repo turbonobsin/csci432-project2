@@ -10,13 +10,14 @@ const route = useRoute();
 
 const props = defineProps<{
     teamId:string;
+    team?:Team;
 }>();
 const search_res = useSearchResultsStore();
 const error = useTemplateRef("error");
 const isFavorited = ref(false);
 const newFavoriteChange = ref(false);
 
-const details = ref({} as TeamDetails);
+const details = ref({team:(props.team??undefined)} as TeamDetails);
 
 let icons = ref({
     "east":"arrow_right",
@@ -67,6 +68,7 @@ onMounted(async ()=>{
     load();
 });
 watch(route,()=>{
+    if(props.team) details.value.team = props.team;
     load();
 });
 

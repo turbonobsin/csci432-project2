@@ -82,6 +82,7 @@ onMounted(()=>{
     });
 });
 watch(route,()=>{
+    details.value = {game:{},playerStats:[] as PlayerStat[]} as GameDetails;
     load();
 });
 
@@ -104,7 +105,7 @@ function filterPlayerStats(){
         <Error ref="error"></Error>
         <div v-if="details.game" class="team-details-info">
             <div class="flx-c sb">
-                <h3 class="l-name">{{ details.game.home_team }} <br><span style="font-style:normal;color:var(--clr-primary-400)">versus</span><br> {{ details.game.visitor_team }}</h3>
+                <h3 class="l-name">{{ details.game.home_team ?? "..." }} <br><span style="font-style:normal;color:var(--clr-primary-400)">versus</span><br> {{ details.game.visitor_team ?? "..." }}</h3>
             </div>
             <div class="flx-c sb" style="margin-block:var(--size-200)">
                 <div><span class="score" :win="details.game.home_team_score > details.game.visitor_team_score ? 1 : details.game.home_team_score == details.game.visitor_team_score ? 2 : 0">{{ details.game.home_team_score }}</span> / <span class="score" :win="details.game.home_team_score < details.game.visitor_team_score ? 1 : details.game.home_team_score == details.game.visitor_team_score ? 2 : 0">{{ details.game.visitor_team_score }}</span></div>
@@ -163,7 +164,7 @@ function filterPlayerStats(){
                     <div class="player-ops flx-c sb">
                         <h3 class="player-title">{{ stat.player_name }}</h3>
                         <!-- some colors: deeppink, mediumslateblue -->
-                        <RouterLink :to="`/placebet/${props.playerId}/${props.playerName}/${props.gameId}`" v-if="props.gameId && props.playerId" class="icon-btn accent3" style="--c:mediumslateblue">
+                        <RouterLink :to="`/placebet/${props.playerId}/${props.playerName}/${props.gameId}`" v-if="props.gameId && props.playerId && props.playerName?.toLowerCase().replace(/\s/g,'') == stat.player_name.toLowerCase().replace(/\s/g,'')" class="icon-btn accent3" style="--c:mediumslateblue">
                             <div class="icon">paid</div>
                             <div style="font-weight:bold">Place Bet</div>
                         </RouterLink>
@@ -171,10 +172,10 @@ function filterPlayerStats(){
                             <span class="icon">link</span>
                             Games
                         </RouterLink> -->
-                        <RouterLink v-else class="icon-btn accent3" :to="`/byplayer/${stat.player_id}/${stat.player_name}/${props.gameId}`">
+                        <!-- <RouterLink v-else class="icon-btn accent3" :to="`/byplayer/${stat.player_id}/${stat.player_name}/${props.gameId}`">
                             <div class="icon">sports_esports</div>
                             <div style="font-weight:bold">Their Games</div>
-                        </RouterLink>
+                        </RouterLink> -->
                     </div>
                     <table class="tab">
                         <tr>

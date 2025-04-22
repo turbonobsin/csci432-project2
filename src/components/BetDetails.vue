@@ -1,119 +1,86 @@
 <script setup lang="ts">
 import { useSearchResultsStore } from '@/stores/search_results';
-import { serverUrl, stringMatch, tmpBet, type Game, type GameDetails, type GameSimple, type Player, type PlayerDetails, type PlayerStat, type Team, type TeamDetails } from '@/util';
-import { onMounted, ref, useTemplateRef, watch } from 'vue';
+import { curBetGame, curBetLoading, curBetPlayer, serverUrl, stringMatch, tmpBet, type Bet, type Game, type GameDetails, type GameSimple, type Player, type PlayerDetails, type PlayerStat, type Team, type TeamDetails } from '@/util';
+import { onMounted, ref, useTemplateRef, watch, type Ref } from 'vue';
 import Error from './Error.vue';
 import { useRoute } from 'vue-router';
 import Loading from './Loading.vue';
 import RadioSwitcher from './RadioSwitcher.vue';
 
-const route = useRoute();
-
 // const error = useTemplateRef("error");
 
 let bet = tmpBet;
-let playerData = ref(undefined as Player|undefined);
+// let playerData = ref(undefined as Player|undefined);
 
-const details = ref({game:{},playerStats:[] as PlayerStat[]} as GameDetails);
+// const details = ref({game:{},playerStats:[] as PlayerStat[]} as GameDetails);
+// function resetDetails(){
+    // details.value = {game:{},playerStats:[] as PlayerStat[]} as GameDetails;
+// }
 
-async function getDetails(){
-    let url = new URL(serverUrl+"/games/"+bet.value.gameId);
+// onMounted(()=>{
+    // getDetails();
+// });
+// watch(tmpBet,()=>{
+    // resetDetails();
+    // playerData.value = undefined;
+    // getDetails();
+// });
 
-    // error.value?.clear();
-    details.value.playerStats = null;
-
-    let res = await fetch(url,{
-        method:"GET"
-    });
-
-    if(res.ok){
-        let data = await res.json() as GameDetails;
-        // console.log("game details",props.gameId,data);
-
-        details.value.game = data.game;
-        details.value.playerStats = data.playerStats;
-
-        // filterPlayerStats();
-        getPlayerData(bet.value.playerId);
-    }
-    else{
-        alert("Failed to get game details with code: "+res.status+` (${res.statusText})`);
-    }
-}
-
-async function getPlayerData(playerId:number){
-    let url = new URL(serverUrl+"/players/"+playerId);
-
-    let res = await fetch(url,{
-        method:"GET"
-    });
-
-    if(res.ok){
-        let data = await res.json() as PlayerDetails;
-        console.log("player details",playerId,data);
-
-        playerData.value = data.player.data;
-    }
-    else{
-        alert("Failed to get player details with code: "+res.status+` (${res.statusText})`);
-    }
-}
-
-onMounted(()=>{
-    getDetails();
+watch(curBetGame!,(v)=>{
+    console.log("game changed",v?.home_team);
 });
 
 </script>
 
 <template>
-    <div class="details game-details">
+    <div class="details bet-details">
         <Error ref="error"></Error>
-        <div v-if="details.game" class="team-details-info">
+        <div v-if="bet" class="team-details-info">
             <div class="flx-c sb">
-                <h3 class="l-name">{{ details.game.home_team }} <br><span style="font-style:normal;color:var(--clr-primary-400)">versus</span><br> {{ details.game.visitor_team }}</h3>
+                <h3 class="l-name">{{ curBetGame?.home_team ?? "..." }} <br><span style="font-style:normal;color:var(--clr-primary-400)">versus</span><br> {{ curBetGame?.visitor_team ?? "..." }}</h3>
             </div>
             <div>
                 <label style="width:unset">Betting on</label>
-                <h3 class="l-name" style="font-size:13px">{{ playerData ? (playerData.first_name+" "+playerData.last_name) : "..." }}</h3>
+                <h3 class="l-name" style="font-size:13px">{{ curBetPlayer ? (curBetPlayer.first_name+" "+curBetPlayer.last_name) : "..." }}</h3>
             </div>
 
             <div class="flx-c sb" style="margin-block:var(--size-200)">
                 <label style="margin:0px">Game Date</label>
-                <div v-if="details.game.date">{{ new Date(details.game.date).toLocaleString([],{dateStyle:"medium"}) }}</div>
+                <div v-if="curBetGame?.date">{{ new Date(curBetGame.date).toLocaleString([],{dateStyle:"medium"}) }}</div>
             </div>
 
-            <div class="info-cont">
+            <div class="info-cont" v-if="curBetGame">
                 <div>
                     <div class="flx-c gap4">
                         <label>Home Team</label>
-                        <div>{{ details.game.home_team }}</div>
+                        <div>{{ curBetGame.home_team }}</div>
                         <!-- <span class="score win" v-if="details.game.home_team_score > details.game.visitor_team_score">Winner</span> -->
                     </div>
                     <div class="flx-c gap4">
                         <label>Score</label>
-                        <div>{{ details.game.home_team_score }}</div>
+                        <div>{{ curBetGame.home_team_score }}</div>
                     </div>
                 </div>
                 <div>
                     <div class="flx-c gap4">
                         <label>Visitor Team</label>
-                        <div>{{ details.game.visitor_team }}</div>
+                        <div>{{ curBetGame.visitor_team }}</div>
                     </div>
                     <div class="flx-c gap4">
                         <label>Score</label>
-                        <div>{{ details.game.visitor_team_score }}</div>
+                        <div>{{ curBetGame.visitor_team_score }}</div>
                     </div>
                 </div>
             </div>
             <hr>
-            <div v-if="details.game.date">
+            <div v-if="curBetGame?.date">
                 <div class="flx-c gap4">
                     <label>Date</label>
-                    <div>{{ new Date(details.game.date).toLocaleString([],{dateStyle:"full"}) }}</div>
+                    <div>{{ new Date(curBetGame.date).toLocaleString([],{dateStyle:"full"}) }}</div>
                 </div>
                 <div class="flx-c gap4">
                     <label>Status</label>
-                    <div>{{ details.game.status }}</div>
+                    <div>{{ curBetGame.status }}</div>
                 </div>
             </div>
             <hr><br>
@@ -130,7 +97,7 @@ onMounted(()=>{
             </div>
 
             <label for="">Results</label>
-            <div v-show="details.playerStats">
+            <div v-show="curBetGame">
                 <div>
                     <h4 v-if="bet.status != 'completed'">The results are not in yet.</h4>
                     <table v-else class="tab">
@@ -170,7 +137,7 @@ onMounted(()=>{
             <br>
             <h4 v-if="bet.score != null" class="l-name">Your final score: <span style="margin-left:var(--size-300)">{{ bet.score }}</span></h4>
 
-            <Loading :loading="!details.playerStats"></Loading>
+            <Loading :loading="curBetLoading"></Loading>
             <!-- <div v-else> -->
             <!-- </div> -->
         </div>
